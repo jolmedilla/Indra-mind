@@ -217,6 +217,25 @@
   .btable tr:last-child td { border-bottom: none; }
   .slide.backup { border-top: 1px dashed var(--line-2); }
 
+  /* ---------- Worked-example sequence ---------- */
+  .seq { display: flex; flex-direction: column; margin-top: 2rem; }
+  .seq .st { border: 1px solid var(--line); border-radius: var(--r); background: linear-gradient(180deg, var(--surface), var(--bg-2)); padding: 1rem 1.3rem; display: flex; gap: 1rem; align-items: baseline; flex-wrap: wrap; }
+  .seq .st.hot { border-color: rgba(70,199,245,0.4); box-shadow: inset 0 0 0 1px rgba(70,199,245,0.1); }
+  .seq .st .k { font-family: var(--f-mono); font-size: 0.66rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--cyan); flex: none; width: 8rem; }
+  .seq .st .body { flex: 1; min-width: 220px; }
+  .seq .st .t { font-family: var(--f-display); font-weight: 650; font-size: 1rem; letter-spacing: -0.01em; }
+  .seq .st .d { margin-top: 0.5rem; display: flex; flex-wrap: wrap; gap: 0.4rem; }
+  .seq .st .d span { font-family: var(--f-mono); font-size: 0.74rem; color: var(--ink-dim); border: 1px solid var(--line); border-radius: 7px; padding: 0.28rem 0.55rem; }
+  .seq .ar { align-self: center; color: var(--muted); font-size: 0.9rem; padding: 0.3rem 0; }
+
+  .reflist { list-style: none; padding: 0; margin: 0.7rem 0 0; display: flex; flex-direction: column; gap: 0.45rem; }
+  .reflist li { font-family: var(--f-mono); font-size: 0.82rem; color: var(--ink-dim); }
+  .reflist li b { color: var(--cyan-2); font-weight: 600; }
+
+  .codeblk { font-family: var(--f-mono); font-size: 0.78rem; line-height: 1.6; background: #0B111C; border: 1px solid var(--line); border-radius: 10px; padding: 1rem 1.2rem; color: var(--ink-dim); white-space: pre; overflow-x: auto; }
+  .codeblk .cm { color: var(--muted); }
+  .codeblk .kw { color: var(--cyan-2); }
+
   .metrics { display: flex; flex-wrap: wrap; gap: 1.4rem 2.4rem; margin-top: 2rem; }
   .metric .mv { font-family: var(--f-display); font-size: clamp(1.8rem, 3.6vw, 2.6rem); font-weight: 700; color: var(--cyan-2); letter-spacing: -0.02em; font-variant-numeric: tabular-nums; }
   .metric .ml { font-family: var(--f-mono); font-size: 0.72rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin-top: 0.2rem; }
@@ -475,6 +494,24 @@
   </div>
 </section>
 
+<!-- 05c — EJEMPLO CONCRETO -->
+<section class="slide" data-label="Ejemplo">
+  <div class="wrap">
+    <p class="eyebrow reveal">Un caso concreto</p>
+    <h2 class="reveal">Aglomeración en València,<br>subiendo por el flujo.</h2>
+    <div class="seq reveal">
+      <div class="st"><div class="k">N0 · Percepción</div><div class="body"><div class="t">3 eventos tipados</div><div class="d"><span>ocupacion_zona · plaza · +7,6&#963;</span><span>flujo_metro · Xàtiva · +58%</span><span>acustico · +6 dB · 12 min</span></div></div></div>
+      <div class="ar">&#8595;</div>
+      <div class="st"><div class="k">CEP · Correlación</div><div class="body"><div class="t">Convergen en la misma zona + ventana de 20 min</div><div class="d"><span>&#8594; incidente candidato: aglomeración</span></div></div></div>
+      <div class="ar">&#8595;</div>
+      <div class="st hot"><div class="k">N1 · Especialista</div><div class="body"><div class="t">Hipótesis: concentración espontánea · confianza 0,78</div><div class="d"><span>descarta: evento en agenda</span><span>descarta: salida de espectáculo</span><span>proyección: 75% aforo ~20:15</span></div></div></div>
+      <div class="ar">&#8595;</div>
+      <div class="st"><div class="k">&#8594; Operador</div><div class="body"><div class="t">Aviso con 20+ min de antelación, trazado</div><div class="d"><span>el operador valida · control humano</span></div></div></div>
+    </div>
+    <p class="pull reveal">El mismo flujo de la slide anterior — ahora con <span class="hl">datos reales</span> subiendo.</p>
+  </div>
+</section>
+
 <!-- 06 — COMPETENCIA -->
 <section class="slide" data-label="Mercado">
   <div class="wrap">
@@ -582,6 +619,50 @@
       <li><b>Definir equipo y liderazgo técnico:</b> pequeño, con autoridad y criterio.</li>
     </ul>
     <p class="pull reveal">De datos integrados a <span class="hl">inteligencia real</span> — con criterio, no con <span class="hl-red">hype</span>.</p>
+  </div>
+</section>
+
+<!-- BACKUP — EL MODELO -->
+<section class="slide backup" data-label="Backup" data-backup="1">
+  <div class="wrap">
+    <p class="eyebrow reveal">Backup · el modelo</p>
+    <h2 class="reveal">Entidades · eventos · relaciones.</h2>
+    <p class="lede reveal tight">El «modelo de eventos y entidades» mínimo: núcleo reutilizable entre clientes; se extiende por dominio.</p>
+    <div class="grid g3">
+      <div class="card reveal"><div class="k">Tipos de entidad</div><ul class="reflist"><li>Sensor · Cámara · Hidrante</li><li>Vehículo · Persona · Unidad</li><li>Zona · Edificio</li><li>Incidente · Misión</li></ul></div>
+      <div class="card reveal"><div class="k">Tipos de evento</div><ul class="reflist"><li>humo_detectado</li><li>ocupacion_zona</li><li>flujo_salida_estacion</li><li>acustico_sostenido</li><li>convergencia_social</li><li>anomalia_temperatura</li></ul></div>
+      <div class="card reveal"><div class="k">Relaciones</div><ul class="reflist"><li>cámara <b>COVERS</b> zona</li><li>estación <b>FEEDS</b> zona</li><li>unidad <b>BELONGS_TO</b> turno</li><li>persona <b>OWNS</b> vehículo</li><li>hidrante <b>LOCATED_IN</b> calle</li></ul></div>
+    </div>
+    <p class="note reveal">// Mínimo y gobernado — no una mega-ontología. Puede vivir en tablas de Postgres.</p>
+  </div>
+</section>
+
+<!-- BACKUP — DEL EVENTO A LA CONCLUSIÓN -->
+<section class="slide backup" data-label="Backup" data-backup="1">
+  <div class="wrap">
+    <p class="eyebrow reveal">Backup · del evento a la conclusión</p>
+    <h2 class="reveal">Un evento, tipado y correlado.</h2>
+    <div class="grid g2">
+      <div>
+<div class="codeblk reveal"><span class="cm"># evento tipado (percepción)</span>
+- id: EV-184211
+  tipo: ocupacion_zona
+  entidad: zona/plaza_A
+  valor: 3900   baseline: 1450 ± 320
+  desviacion: +7.6σ   confianza: 0.87
+  t: 18:42:11   fuente: CAM-PLZ-04</div>
+<div class="codeblk reveal" style="margin-top:1rem;"><span class="cm"># regla CEP (correlación)</span>
+<span class="kw">si</span>  ocupacion_zona &gt; 2.5σ
+<span class="kw">∧</span>   flujo_salida_estacion &gt; 2σ
+<span class="kw">∧</span>   acustico_sostenido
+<span class="kw">en</span>  misma zona · ventana 20 min
+<span class="kw">→</span>   candidato: aglomeracion</div>
+      </div>
+      <div>
+        <div class="card accent reveal"><div class="k">Emisión del especialista</div><p>«Concentración espontánea en Zona A, confianza 0,78; hipótesis alternativas descartadas y trazadas; 75% de aforo ~20:15».</p></div>
+        <div class="card reveal" style="margin-top:1rem;"><div class="k">Dónde aterriza cada pieza</div><ul class="reflist"><li>evento &#8594; <b>almacén de series</b></li><li>zona/plaza_A (entidad) &#8594; <b>registro</b></li><li>relación estación&#8594;zona &#8594; <b>registro</b></li><li>incidente + hipótesis &#8594; <b>pizarra</b></li><li>cada acceso a dato &#8594; <b>auditoría</b></li></ul></div>
+      </div>
+    </div>
   </div>
 </section>
 
