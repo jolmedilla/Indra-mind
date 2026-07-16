@@ -1,0 +1,658 @@
+<title>IndraMind · Diagnóstico técnico</title>
+
+<style>
+  * { box-sizing: border-box; }
+
+  :root {
+    color-scheme: dark;
+    --bg:        #080B12;
+    --bg-2:      #0B111C;
+    --surface:   #111826;
+    --surface-2: #161F30;
+    --line:      rgba(150, 175, 210, 0.14);
+    --line-2:    rgba(150, 175, 210, 0.28);
+    --ink:       #E9EEF6;
+    --ink-dim:   #AEBBD0;
+    --muted:     #8090A8;
+    --cyan:      #46C7F5;
+    --cyan-2:    #7FE0FF;
+    --blue:      #1E6FEB;
+    --red:       #FF4A4A;
+    --amber:     #FFB454;
+    --green:     #46E3A0;
+
+    --maxw: 1080px;
+    --pad: clamp(1.25rem, 4vw, 4rem);
+    --r: 14px;
+
+    --f-display: -apple-system, "SF Pro Display", "Segoe UI", system-ui, Roboto, Helvetica, Arial, sans-serif;
+    --f-body: -apple-system, "SF Pro Text", "Segoe UI", system-ui, Roboto, Helvetica, Arial, sans-serif;
+    --f-mono: ui-monospace, "SF Mono", "JetBrains Mono", "Cascadia Code", Menlo, Consolas, monospace;
+  }
+
+  html { scroll-behavior: smooth; }
+  @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+
+  body {
+    margin: 0;
+    background:
+      radial-gradient(1200px 800px at 80% -10%, rgba(30, 111, 235, 0.14), transparent 60%),
+      radial-gradient(900px 700px at -10% 110%, rgba(70, 199, 245, 0.08), transparent 55%),
+      var(--bg);
+    color: var(--ink);
+    font-family: var(--f-body);
+    font-size: clamp(15px, 1.05vw, 17px);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ---------- Fixed chrome ---------- */
+  .chrome {
+    position: fixed; inset: 0 0 auto 0; z-index: 50;
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 1rem;
+    padding: 0.85rem var(--pad);
+    background: linear-gradient(180deg, rgba(8,11,18,0.92), rgba(8,11,18,0));
+    backdrop-filter: blur(6px);
+    pointer-events: none;
+  }
+  .brand { display: flex; align-items: center; gap: 0.6rem; font-family: var(--f-display); }
+  .brand .mark {
+    width: 11px; height: 11px; border-radius: 50%;
+    background: var(--red);
+    box-shadow: 0 0 0 3px rgba(255,74,74,0.18), 0 0 16px 2px rgba(255,74,74,0.5);
+  }
+  .brand b { font-weight: 700; letter-spacing: -0.01em; }
+  .brand span { color: var(--muted); font-weight: 400; }
+  .counter {
+    font-family: var(--f-mono); font-size: 0.72rem; letter-spacing: 0.14em;
+    color: var(--ink-dim);
+    font-variant-numeric: tabular-nums;
+  }
+  .counter b { color: var(--cyan); font-weight: 600; }
+
+  .rail { position: fixed; top: 0; left: 0; height: 2px; width: 0%; z-index: 60;
+    background: linear-gradient(90deg, var(--blue), var(--cyan)); box-shadow: 0 0 12px var(--cyan);
+    transition: width 0.15s linear; }
+
+  /* ---------- Slides ---------- */
+  .slide {
+    min-height: 100svh;
+    padding: clamp(5rem, 10vh, 7rem) var(--pad) clamp(3rem, 8vh, 5rem);
+    display: flex; flex-direction: column; justify-content: center;
+    border-bottom: 1px solid var(--line);
+    position: relative;
+  }
+  .wrap { width: 100%; max-width: var(--maxw); margin: 0 auto; }
+
+  .eyebrow {
+    font-family: var(--f-mono); font-size: 0.74rem;
+    letter-spacing: 0.22em; text-transform: uppercase;
+    color: var(--cyan); margin: 0 0 1.25rem;
+    display: inline-flex; align-items: center; gap: 0.7rem;
+  }
+  .eyebrow::before { content: ""; width: 26px; height: 1px; background: var(--cyan); opacity: 0.7; }
+
+  h1, h2 { font-family: var(--f-display); text-wrap: balance; margin: 0; letter-spacing: -0.02em; line-height: 1.04; font-weight: 700; }
+  h1 { font-size: clamp(2.6rem, 6.5vw, 5rem); }
+  h2 { font-size: clamp(1.9rem, 4.4vw, 3.2rem); }
+  .lede { font-size: clamp(1.05rem, 1.7vw, 1.4rem); color: var(--ink-dim); max-width: 60ch; margin: 1.4rem 0 0; line-height: 1.5; }
+  .lede.tight { max-width: 46ch; }
+  strong { color: var(--ink); font-weight: 650; }
+  .hl { color: var(--cyan-2); }
+  .hl-red { color: var(--red); }
+
+  /* ---------- Cards / grids ---------- */
+  .grid { display: grid; gap: 1rem; margin-top: 2.4rem; }
+  .g3 { grid-template-columns: repeat(3, 1fr); }
+  .g2 { grid-template-columns: repeat(2, 1fr); }
+  @media (max-width: 820px) { .g3, .g2 { grid-template-columns: 1fr; } }
+
+  .card {
+    background: linear-gradient(180deg, var(--surface), var(--bg-2));
+    border: 1px solid var(--line); border-radius: var(--r);
+    padding: 1.35rem 1.4rem;
+    position: relative; overflow: hidden;
+  }
+  .card .k { font-family: var(--f-mono); font-size: 0.7rem; letter-spacing: 0.16em; text-transform: uppercase; color: var(--muted); }
+  .card h3 { font-family: var(--f-display); font-size: 1.18rem; margin: 0.5rem 0 0.5rem; letter-spacing: -0.01em; font-weight: 650; }
+  .card p { margin: 0; color: var(--ink-dim); font-size: 0.96rem; }
+  .card.good { border-color: rgba(70,227,160,0.32); }
+  .card.good .k { color: var(--green); }
+  .card.bad  { border-color: rgba(255,74,74,0.30); }
+  .card.bad .k { color: var(--red); }
+  .card.accent { border-color: rgba(70,199,245,0.32); }
+  .tick { color: var(--green); } .cross { color: var(--red); }
+
+  ul.clean { list-style: none; padding: 0; margin: 1.6rem 0 0; display: grid; gap: 0.85rem; }
+  ul.clean li { padding-left: 1.6rem; position: relative; color: var(--ink-dim); }
+  ul.clean li::before { content: ""; position: absolute; left: 0; top: 0.62em; width: 8px; height: 8px; border-radius: 2px; background: var(--cyan); box-shadow: 0 0 10px rgba(70,199,245,0.6); }
+  ul.clean li b { color: var(--ink); }
+
+  .pull {
+    margin: 2.4rem 0 0; padding: 1.4rem 1.6rem;
+    border-left: 3px solid var(--cyan);
+    background: linear-gradient(90deg, rgba(70,199,245,0.08), transparent);
+    font-family: var(--f-display); font-size: clamp(1.15rem, 2.2vw, 1.7rem);
+    letter-spacing: -0.01em; line-height: 1.28; color: var(--ink); text-wrap: balance;
+  }
+
+  .note { margin-top: 1.8rem; font-family: var(--f-mono); font-size: 0.76rem; letter-spacing: 0.03em; color: var(--muted); }
+
+  /* ---------- Architecture diagram ---------- */
+  .arch { display: grid; grid-template-columns: 250px 1fr; gap: 1rem; margin-top: 2.2rem; align-items: stretch; }
+  @media (max-width: 820px) { .arch { grid-template-columns: 1fr; } }
+
+  .ladder {
+    background: linear-gradient(180deg, var(--surface), var(--bg-2));
+    border: 1px solid var(--line); border-radius: var(--r); padding: 1.15rem 1.15rem;
+    display: flex; flex-direction: column; gap: 0.55rem;
+  }
+  .ladder .lab { font-family: var(--f-mono); font-size: 0.66rem; letter-spacing: 0.16em; text-transform: uppercase; color: var(--muted); margin-bottom: 0.35rem; }
+  .step { display: flex; align-items: center; gap: 0.6rem; font-size: 0.84rem; color: var(--ink-dim); padding: 0.5rem 0.6rem; border-radius: 8px; background: rgba(150,175,210,0.05); }
+  .step .dot { width: 7px; height: 7px; border-radius: 50%; flex: none; }
+  .s1 .dot { background: #3b4c66; } .s2 .dot { background: var(--blue); }
+  .s3 .dot { background: var(--cyan); } .s4 .dot { background: var(--red); box-shadow: 0 0 8px var(--red); }
+  .ladder .arrow { text-align: center; color: var(--muted); font-size: 0.7rem; line-height: 0.4; }
+
+  .layers { display: flex; flex-direction: column; gap: 0.55rem; }
+  .layer {
+    border: 1px solid var(--line); border-radius: 10px; padding: 0.85rem 1.1rem;
+    background: linear-gradient(180deg, var(--surface-2), var(--surface));
+    display: flex; align-items: center; justify-content: space-between; gap: 1rem;
+  }
+  .layer .lvl { font-family: var(--f-mono); font-size: 0.7rem; color: var(--cyan); letter-spacing: 0.1em; flex: none; width: 3.2rem; }
+  .layer .name { font-family: var(--f-display); font-weight: 650; font-size: 1.02rem; }
+  .layer .desc { color: var(--muted); font-size: 0.82rem; text-align: right; }
+  .layer.core { border-color: rgba(70,199,245,0.4); box-shadow: inset 0 0 0 1px rgba(70,199,245,0.12), 0 0 24px rgba(30,111,235,0.14); }
+  .layer.top { border-color: rgba(255,74,74,0.28); }
+  @media (max-width: 560px) { .layer { flex-direction: column; align-items: flex-start; gap: 0.25rem; } .layer .desc { text-align: left; } }
+
+  .cross-cut { margin-top: 0.7rem; display: flex; flex-wrap: wrap; gap: 0.5rem; }
+  .chip { font-family: var(--f-mono); font-size: 0.7rem; letter-spacing: 0.08em; color: var(--ink-dim);
+    border: 1px dashed var(--line-2); border-radius: 999px; padding: 0.32rem 0.75rem; }
+
+  /* ---------- Competitive stack ---------- */
+  .cstack { display: flex; flex-direction: column; gap: 0.6rem; margin-top: 2.2rem; }
+  .clayer { border: 1px solid var(--line); border-radius: 10px; padding: 1rem 1.2rem; background: var(--surface); }
+  .clayer .top-row { display: flex; justify-content: space-between; align-items: baseline; gap: 1rem; flex-wrap: wrap; }
+  .clayer .t { font-family: var(--f-display); font-weight: 650; font-size: 1.02rem; }
+  .clayer .who { font-family: var(--f-mono); font-size: 0.78rem; color: var(--ink-dim); }
+  .clayer.moat { border-color: rgba(70,199,245,0.4); background: linear-gradient(180deg, rgba(70,199,245,0.06), var(--surface)); }
+  .clayer.moat .t { color: var(--cyan-2); }
+  .clayer .sub { color: var(--muted); font-size: 0.82rem; margin-top: 0.25rem; }
+
+  /* ---------- Pipeline ---------- */
+  .pipe { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 2.2rem; align-items: stretch; }
+  .pnode { flex: 1 1 130px; border: 1px solid var(--line); border-radius: 10px; padding: 0.9rem 0.9rem; background: var(--surface); position: relative; }
+  .pnode .n { font-family: var(--f-mono); font-size: 0.64rem; color: var(--cyan); letter-spacing: 0.12em; }
+  .pnode .pt { font-family: var(--f-display); font-weight: 650; font-size: 0.98rem; margin-top: 0.3rem; }
+  .pnode .pd { color: var(--muted); font-size: 0.78rem; margin-top: 0.2rem; }
+
+  .diagram { margin-top: 2rem; overflow-x: auto; border: 1px solid var(--line); border-radius: var(--r); background: linear-gradient(180deg, var(--bg-2), var(--bg)); padding: 0.6rem; }
+  .diagram svg { display: block; width: 100%; min-width: 780px; height: auto; }
+
+  /* ---------- Sovereignty slide ---------- */
+  .sov { display: grid; grid-template-columns: 1fr auto 1fr; gap: 1.1rem; align-items: center; margin-top: 2.4rem; }
+  @media (max-width: 820px) { .sov { grid-template-columns: 1fr; } }
+  .sov .zone { border: 1px solid var(--line); border-radius: var(--r); padding: 1.3rem 1.4rem; background: linear-gradient(180deg, var(--surface), var(--bg-2)); }
+  .sov .zone.own { border-color: rgba(70,199,245,0.4); box-shadow: 0 0 26px rgba(30,111,235,0.12); }
+  .sov .z-tag { font-family: var(--f-mono); font-size: 0.66rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); }
+  .sov .zone.own .z-tag { color: var(--cyan); }
+  .sov .zone h3 { font-family: var(--f-display); font-size: 1.05rem; margin: 0.55rem 0 0; font-weight: 650; letter-spacing: -0.01em; }
+  .sov .items { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.85rem; }
+  .sov .items span { font-family: var(--f-mono); font-size: 0.74rem; color: var(--ink-dim); border: 1px solid var(--line); border-radius: 8px; padding: 0.32rem 0.6rem; }
+  .sov .link { display: flex; flex-direction: column; gap: 0.55rem; align-items: center; text-align: center; font-family: var(--f-mono); font-size: 0.72rem; color: var(--muted); line-height: 1.35; }
+  .sov .link .a { color: var(--cyan); }
+  @media (max-width: 820px) { .sov .link { flex-direction: row; justify-content: center; gap: 1rem; } }
+
+  /* ---------- Backup table ---------- */
+  .btable-wrap { overflow-x: auto; margin-top: 2rem; }
+  .btable { width: 100%; border-collapse: collapse; font-size: 0.95rem; min-width: 620px; }
+  .btable th, .btable td { text-align: left; padding: 0.8rem 1rem; border-bottom: 1px solid var(--line); }
+  .btable th { font-family: var(--f-mono); font-size: 0.68rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); font-weight: 500; }
+  .btable td { color: var(--ink-dim); }
+  .btable td b { color: var(--ink); font-weight: 600; }
+  .btable td .m { font-family: var(--f-mono); font-size: 0.82rem; color: var(--muted); }
+  .btable tr:last-child td { border-bottom: none; }
+  .slide.backup { border-top: 1px dashed var(--line-2); }
+
+  .metrics { display: flex; flex-wrap: wrap; gap: 1.4rem 2.4rem; margin-top: 2rem; }
+  .metric .mv { font-family: var(--f-display); font-size: clamp(1.8rem, 3.6vw, 2.6rem); font-weight: 700; color: var(--cyan-2); letter-spacing: -0.02em; font-variant-numeric: tabular-nums; }
+  .metric .ml { font-family: var(--f-mono); font-size: 0.72rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin-top: 0.2rem; }
+
+  /* ---------- HAL eye ---------- */
+  .eye-wrap { position: absolute; inset: 0; overflow: hidden; pointer-events: none; z-index: -1; }
+  .eye {
+    position: absolute; width: min(70vw, 620px); aspect-ratio: 1; border-radius: 50%;
+    display: grid; place-items: center;
+    background: radial-gradient(circle at 50% 50%, rgba(255,74,74,0.55) 0%, rgba(255,74,74,0.16) 22%, transparent 46%);
+  }
+  .eye::before, .eye::after { content: ""; position: absolute; border-radius: 50%; border: 1px solid rgba(70,199,245,0.16); }
+  .eye::before { inset: 12%; border-color: rgba(70,199,245,0.22); }
+  .eye::after  { inset: 26%; border-color: rgba(255,74,74,0.28); }
+  .eye .pupil { width: 14%; aspect-ratio: 1; border-radius: 50%; background: radial-gradient(circle at 40% 40%, #ff8a8a, var(--red) 55%, #7a0d0d);
+    box-shadow: 0 0 40px 6px rgba(255,74,74,0.6); animation: pulse 5.5s ease-in-out infinite; }
+  @keyframes pulse { 0%,100% { transform: scale(1); opacity: 0.92; } 50% { transform: scale(1.08); opacity: 1; } }
+  @media (prefers-reduced-motion: reduce) { .eye .pupil { animation: none; } }
+
+  .cover .eye { top: -8%; right: -12%; opacity: 0.85; }
+  .close .eye { bottom: -18%; left: 50%; transform: translateX(-50%); opacity: 0.7; }
+
+  .byline { margin-top: 2.6rem; display: flex; flex-wrap: wrap; gap: 0.6rem 1.4rem; align-items: center; font-family: var(--f-mono); font-size: 0.8rem; color: var(--ink-dim); }
+  .byline .sep { color: var(--line-2); }
+  .tag { font-family: var(--f-mono); font-size: 0.7rem; letter-spacing: 0.16em; text-transform: uppercase; color: var(--muted); border: 1px solid var(--line); border-radius: 999px; padding: 0.3rem 0.8rem; }
+
+  /* ---------- Reveal ---------- */
+  .reveal { opacity: 0; transform: translateY(18px); transition: opacity 0.7s ease, transform 0.7s cubic-bezier(0.2,0.7,0.2,1); }
+  .reveal.in { opacity: 1; transform: none; }
+  @media (prefers-reduced-motion: reduce) { .reveal { opacity: 1; transform: none; transition: none; } }
+
+  .foot { padding: 2rem var(--pad); text-align: center; font-family: var(--f-mono); font-size: 0.72rem; letter-spacing: 0.08em; color: var(--muted); }
+</style>
+
+<div class="rail" id="rail"></div>
+
+<header class="chrome">
+  <div class="brand"><span class="mark"></span><b>IndraMind</b><span>· Diagnóstico</span></div>
+  <div class="counter"><b id="cnum">01</b> / <span id="ctot">12</span></div>
+</header>
+
+<!-- 00 — COVER -->
+<section class="slide cover" data-label="Portada">
+  <div class="eye-wrap"><div class="eye"><div class="pupil"></div></div></div>
+  <div class="wrap">
+    <p class="eyebrow reveal">Diagnóstico técnico · Confidencial · Julio 2026</p>
+    <h1 class="reveal">IndraMind<br>Security.</h1>
+    <p class="lede reveal">Diagnóstico técnico <strong>independiente</strong> y camino a seguir para el motor cognitivo. Qué es viable, qué no, y cómo lo construiría.</p>
+    <div class="byline reveal">
+      <span>Juan José Olmedilla</span><span class="sep">·</span>
+      <span>Asesoría externa</span><span class="sep">·</span>
+      <span class="tag">Borrador · sin sesgo del enfoque actual</span>
+    </div>
+  </div>
+</section>
+
+<!-- 01 — EL ENCARGO -->
+<section class="slide" data-label="El encargo">
+  <div class="wrap">
+    <p class="eyebrow reveal">El encargo</p>
+    <h2 class="reveal">Un criterio técnico,<br>externo e imparcial.</h2>
+    <p class="lede reveal tight">Tres preguntas que hay que responder con autoridad, no con opiniones.</p>
+    <div class="grid g3">
+      <div class="card reveal"><div class="k">01 · Viabilidad</div><h3>¿Se puede hacer?</h3><p>¿Es realizable el producto que se está vendiendo, o es una película?</p></div>
+      <div class="card reveal"><div class="k">02 · Enfoque</div><h3>¿Es el adecuado?</h3><p>¿El camino técnico actual lleva a algún sitio, o hay que reorientar?</p></div>
+      <div class="card reveal"><div class="k">03 · Cómo</div><h3>¿Cómo lo haría yo?</h3><p>Arquitectura, equipo y tiempos. Y una prueba de concepto que lo demuestre.</p></div>
+    </div>
+    <p class="note reveal">// Externo · por horas · sin intereses. La neutralidad es el activo.</p>
+  </div>
+</section>
+
+<!-- 01b — QUÉ ES EN REALIDAD -->
+<section class="slide" data-label="Qué es">
+  <div class="wrap">
+    <p class="eyebrow reveal">Qué es esto, en realidad</p>
+    <h2 class="reveal">Conciencia situacional,<br>un nivel más arriba.</h2>
+    <p class="lede reveal">No lo inventamos. La <strong>conciencia situacional</strong> (Common Operational Picture) es un dominio con décadas de literatura. Lo que aporta IndraMind es <span class="hl">subirlo un nivel de abstracción</span>: el razonamiento lateral encima.</p>
+    <div class="layers reveal" style="margin-top: 2rem;">
+      <div class="layer core"><span class="lvl">nuevo</span><span class="name">Razonamiento lateral / cognitivo</span><span class="desc">correlaciona · anticipa · sugiere · busca proactivamente</span></div>
+      <div class="layer"><span class="lvl">base</span><span class="name">Conciencia situacional · COP</span><span class="desc">fusionar múltiples fuentes en una foto única</span></div>
+    </div>
+    <div class="cross-cut reveal">
+      <span class="chip">PSIM</span>
+      <span class="chip">Mando y control · C2</span>
+      <span class="chip">112 / NG911 · PSAP</span>
+      <span class="chip">Fusión de datos · JDL</span>
+    </div>
+    <p class="pull reveal">La foto única ya existe. El diferencial está en el <span class="hl">razonamiento</span> que va encima.</p>
+  </div>
+</section>
+
+<!-- 02 — VEREDICTO -->
+<section class="slide" data-label="Veredicto">
+  <div class="wrap">
+    <p class="eyebrow reveal">Veredicto</p>
+    <h2 class="reveal">Es viable. Y no es<br>física nuclear.</h2>
+    <p class="lede reveal">El razonamiento que buscáis es <strong>sencillo y lateral</strong> — un LLM actual ya lo hace. El valor está en la <span class="hl">arquitectura</span> que lo integra y lo orquesta en tiempo casi real: fiable, trazable y soberano.</p>
+    <div class="grid g3">
+      <div class="card accent reveal"><div class="k">La magia real</div><h3>Orquestación</h3><p>Juntar muchas fuentes y razonar sobre ellas en frío. Ahí está el producto.</p></div>
+      <div class="card accent reveal"><div class="k">El 80% del trabajo</div><h3>Fontanería de datos</h3><p>Integración, eventos en tiempo real, estado. Lo poco glamuroso y decisivo.</p></div>
+      <div class="card accent reveal"><div class="k">La carta ganadora</div><h3>Soberanía</h3><p>El dato en casa del cliente. Lo que ningún US-cloud puede ofrecer igual.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- 03 — EL PROBLEMA REAL -->
+<section class="slide" data-label="Diagnóstico">
+  <div class="wrap">
+    <p class="eyebrow reveal">Diagnóstico</p>
+    <h2 class="reveal">Fontanería primero.<br>IA después.</h2>
+    <div class="grid g2">
+      <div class="card good reveal">
+        <div class="k">Dónde está el valor</div>
+        <h3>Integrar y correlacionar</h3>
+        <p>Conectores, modelo de eventos, streaming, estado del mundo, fiabilidad 24/7 y seguridad. <strong>Sin esto, la IA no tiene sobre qué razonar.</strong></p>
+      </div>
+      <div class="card bad reveal">
+        <div class="k">Dónde se pone el foco hoy</div>
+        <h3>La casa por el tejado</h3>
+        <p>Repartir el trabajo por módulos —GIS, misiones, streaming— y apostar por una ontología pesada <strong>antes de definir siquiera qué es un incidente.</strong></p>
+      </div>
+    </div>
+    <p class="pull reveal">No es un problema de talento — es de <span class="hl">orden</span>: el fallo habitual es empezar por la tecnología (o por la IA) antes que por los datos y el dominio.</p>
+  </div>
+</section>
+
+<!-- 04 — ONTOLOGÍAS -->
+<section class="slide" data-label="Ontologías">
+  <div class="wrap">
+    <p class="eyebrow reveal">El debate que hay que zanjar</p>
+    <h2 class="reveal">Ontologías: sí para los datos,<br>no para el razonamiento.</h2>
+    <div class="grid g3">
+      <div class="card bad reveal"><div class="k">✕ Como motor de razonamiento</div><h3>Paradigma superado</h3><p>El LLM ya sabe qué es un hidrante. Los árboles simbólicos hechos a mano (años 80–90) los superan los transformers.</p></div>
+      <div class="card good reveal"><div class="k">✓ Como modelo de datos</div><h3>Eventos y entidades, mínimo</h3><p>Normaliza fuentes heterogéneas en eventos tipados con tiempo y geometría. Habilita correlación determinista y auditable.</p></div>
+      <div class="card accent reveal"><div class="k">↔ El «grafo»</div><h3>Una capacidad, no una tecnología</h3><p>Identidad + relaciones + procedencia. A escala ciudad puede correr sobre PostgreSQL. Que el almacén sea un benchmark, no un dogma.</p></div>
+    </div>
+    <p class="pull reveal">«No me reafirmo en <span class="hl-red">ontologías y grafos</span>; me reafirmo en <span class="hl">esquemas, identidad, relaciones y procedencia</span>.»</p>
+  </div>
+</section>
+
+<!-- 05 — ARQUITECTURA -->
+<section class="slide" data-label="Arquitectura">
+  <div class="wrap">
+    <p class="eyebrow reveal">Arquitectura de referencia</p>
+    <h2 class="reveal">Percepción compartida +<br>tres niveles de razonamiento.</h2>
+    <p class="lede reveal tight">Se lee de abajo arriba: del dato crudo a la decisión. Cada nivel razona sobre un objeto distinto — y su doctrina viene de fábrica o del cliente.</p>
+    <div class="layers reveal" style="margin-top: 2rem;">
+      <div class="layer top"><span class="lvl">UX</span><span class="name">Panel del operador</span><span class="desc">mapa · timeline · sugerencias · confianza</span></div>
+      <div class="layer"><span class="lvl">N3</span><span class="name">Coordinador de operaciones</span><span class="desc">la operación: ¿qué importa ahora? · <b style="color:var(--cyan-2)">del cliente</b></span></div>
+      <div class="layer"><span class="lvl">N2</span><span class="name">Director de incidente</span><span class="desc">el incidente: ¿qué hago, cuándo aviso? · <b style="color:var(--cyan-2)">del cliente</b></span></div>
+      <div class="layer core"><span class="lvl">N1</span><span class="name">Especialista de dominio</span><span class="desc">el mundo: ¿qué pasa y por qué? · <b style="color:var(--cyan-2)">de fábrica</b></span></div>
+      <div class="layer"><span class="lvl">N0</span><span class="name">Percepción compartida</span><span class="desc">cada fuente → eventos tipados</span></div>
+    </div>
+    <div class="cross-cut reveal">
+      <span class="chip">Control humano</span>
+      <span class="chip">Trazabilidad</span>
+      <span class="chip">Razonadores sin estado</span>
+      <span class="chip">Configuración declarativa</span>
+      <span class="chip">Soberanía · agnóstico al modelo</span>
+    </div>
+    <p class="note reveal">// El LLM no vigila: razona cuando algo lo merece. Nadie razona sobre la fuente cruda.</p>
+  </div>
+</section>
+
+<!-- 05b — FLUJO -->
+<section class="slide" data-label="Flujo">
+  <div class="wrap">
+    <p class="eyebrow reveal">Flujo de extremo a extremo</p>
+    <h2 class="reveal">De la señal cruda<br>a la decisión.</h2>
+    <div class="diagram reveal">
+      <svg viewBox="0 0 1200 640" role="img" aria-label="Diagrama de flujo: percepcion, correlacion y razonamiento sobre un estado compartido">
+        <defs>
+          <marker id="ah" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 Z" fill="#46C7F5"/></marker>
+          <marker id="ahd" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 Z" fill="#8090A8"/></marker>
+        </defs>
+
+        <text x="16" y="32" font-family="ui-monospace,monospace" font-size="11" fill="#8090A8" letter-spacing="0.04em">Escalera de atención &#8212; el coste sube de izquierda a derecha; el LLM solo razona ante un candidato &#9656;</text>
+
+        <!-- A: PERCEPCIÓN -->
+        <rect x="14" y="52" width="300" height="252" rx="12" fill="#0E1524" stroke="rgba(150,175,210,.20)"/>
+        <text x="30" y="80" font-family="system-ui,-apple-system,sans-serif" font-size="15" font-weight="700" fill="#AEBBD0">PERCEPCIÓN</text>
+        <text x="30" y="96" font-family="ui-monospace,monospace" font-size="10" fill="#8090A8" letter-spacing="0.05em">determinista &#183; por fuente</text>
+        <rect x="26" y="108" width="276" height="52" rx="8" fill="#161F30" stroke="rgba(150,175,210,.16)"/>
+        <text x="38" y="130" font-family="system-ui,-apple-system,sans-serif" font-size="13" font-weight="600" fill="#E9EEF6">Fuentes</text>
+        <text x="38" y="148" font-family="ui-monospace,monospace" font-size="10.5" fill="#8090A8">cámaras &#183; sensores &#183; 112 &#183; redes</text>
+        <line x1="164" y1="160" x2="164" y2="169" stroke="#46C7F5" stroke-width="2" fill="none" marker-end="url(#ah)"/>
+        <rect x="26" y="170" width="276" height="52" rx="8" fill="#161F30" stroke="rgba(150,175,210,.16)"/>
+        <text x="38" y="192" font-family="system-ui,-apple-system,sans-serif" font-size="13" font-weight="600" fill="#E9EEF6">Conectores / adaptadores</text>
+        <text x="38" y="210" font-family="ui-monospace,monospace" font-size="10.5" fill="#8090A8">auth &#183; reconexión &#183; buffer</text>
+        <line x1="164" y1="222" x2="164" y2="231" stroke="#46C7F5" stroke-width="2" fill="none" marker-end="url(#ah)"/>
+        <rect x="26" y="232" width="276" height="52" rx="8" fill="#161F30" stroke="rgba(150,175,210,.16)"/>
+        <text x="38" y="254" font-family="system-ui,-apple-system,sans-serif" font-size="13" font-weight="600" fill="#E9EEF6">Normalizador</text>
+        <text x="38" y="272" font-family="ui-monospace,monospace" font-size="10.5" fill="#8090A8">&#8594; modelo de eventos canónico</text>
+
+        <!-- B: CORRELACIÓN -->
+        <rect x="430" y="52" width="250" height="188" rx="12" fill="#0E1524" stroke="rgba(30,111,235,.42)"/>
+        <text x="446" y="80" font-family="system-ui,-apple-system,sans-serif" font-size="15" font-weight="700" fill="#6FA8FF">CORRELACIÓN</text>
+        <text x="446" y="96" font-family="ui-monospace,monospace" font-size="10" fill="#8090A8" letter-spacing="0.05em">determinista &#183; CEP</text>
+        <rect x="442" y="108" width="226" height="52" rx="8" fill="#161F30" stroke="rgba(30,111,235,.30)"/>
+        <text x="454" y="130" font-family="system-ui,-apple-system,sans-serif" font-size="13" font-weight="600" fill="#E9EEF6">Bus de eventos</text>
+        <text x="454" y="148" font-family="ui-monospace,monospace" font-size="10.5" fill="#8090A8">duradero &#183; ordenado &#183; replay</text>
+        <line x1="555" y1="160" x2="555" y2="169" stroke="#46C7F5" stroke-width="2" fill="none" marker-end="url(#ah)"/>
+        <rect x="442" y="170" width="226" height="56" rx="8" fill="#161F30" stroke="rgba(30,111,235,.30)"/>
+        <text x="454" y="192" font-family="system-ui,-apple-system,sans-serif" font-size="13" font-weight="600" fill="#E9EEF6">Baselines + reglas (CEP)</text>
+        <text x="454" y="210" font-family="ui-monospace,monospace" font-size="10.5" fill="#8090A8">agrupa por espacio&#183;tiempo&#183;entidad</text>
+
+        <!-- C: RAZONAMIENTO -->
+        <rect x="806" y="52" width="380" height="396" rx="12" fill="#0E1524" stroke="rgba(70,199,245,.42)"/>
+        <text x="822" y="80" font-family="system-ui,-apple-system,sans-serif" font-size="15" font-weight="700" fill="#7FE0FF">RAZONAMIENTO</text>
+        <text x="822" y="96" font-family="ui-monospace,monospace" font-size="10" fill="#8090A8" letter-spacing="0.05em">LLM &#183; solo ante candidato</text>
+        <rect x="818" y="108" width="356" height="56" rx="8" fill="#161F30" stroke="rgba(70,199,245,.28)"/>
+        <text x="830" y="130" font-family="system-ui,-apple-system,sans-serif" font-size="13" font-weight="600" fill="#E9EEF6">Especialista de dominio</text>
+        <text x="830" y="148" font-family="ui-monospace,monospace" font-size="10" fill="#8090A8">hipótesis &#183; discriminantes (tools) &#8594; situación candidata</text>
+        <line x1="996" y1="164" x2="996" y2="173" stroke="#46C7F5" stroke-width="2" fill="none" marker-end="url(#ah)"/>
+        <rect x="818" y="172" width="356" height="56" rx="8" fill="#161F30" stroke="rgba(70,199,245,.28)"/>
+        <text x="830" y="194" font-family="system-ui,-apple-system,sans-serif" font-size="13" font-weight="600" fill="#E9EEF6">Fusión de incidentes</text>
+        <text x="830" y="212" font-family="ui-monospace,monospace" font-size="10.5" fill="#8090A8">dedup: espacio &#183; tiempo &#183; entidad</text>
+        <line x1="996" y1="228" x2="996" y2="237" stroke="#46C7F5" stroke-width="2" fill="none" marker-end="url(#ah)"/>
+        <rect x="818" y="236" width="356" height="56" rx="8" fill="#161F30" stroke="rgba(70,199,245,.28)"/>
+        <text x="830" y="258" font-family="system-ui,-apple-system,sans-serif" font-size="13" font-weight="600" fill="#E9EEF6">Director de incidente</text>
+        <text x="830" y="276" font-family="ui-monospace,monospace" font-size="10.5" fill="#8090A8">ciclo de vida &#183; misiones (SOP del cliente)</text>
+        <line x1="996" y1="292" x2="996" y2="301" stroke="#46C7F5" stroke-width="2" fill="none" marker-end="url(#ah)"/>
+        <rect x="818" y="300" width="356" height="56" rx="8" fill="#161F30" stroke="rgba(70,199,245,.28)"/>
+        <text x="830" y="322" font-family="system-ui,-apple-system,sans-serif" font-size="13" font-weight="600" fill="#E9EEF6">Coordinador de operaciones</text>
+        <text x="830" y="340" font-family="ui-monospace,monospace" font-size="10.5" fill="#8090A8">saliencia &#183; arbitraje de recursos</text>
+        <line x1="996" y1="356" x2="996" y2="365" stroke="#46C7F5" stroke-width="2" fill="none" marker-end="url(#ah)"/>
+        <rect x="818" y="364" width="356" height="56" rx="8" fill="#12202b" stroke="rgba(70,199,245,.55)"/>
+        <text x="830" y="386" font-family="system-ui,-apple-system,sans-serif" font-size="13" font-weight="600" fill="#7FE0FF">Panel / Operador</text>
+        <text x="830" y="404" font-family="ui-monospace,monospace" font-size="10.5" fill="#AEBBD0">&#10003; valida &#8212; control humano</text>
+
+        <!-- pills + inter-plane arrows -->
+        <line x1="314" y1="150" x2="328" y2="150" stroke="#46C7F5" stroke-width="2" fill="none" marker-end="url(#ah)"/>
+        <rect x="330" y="128" width="84" height="44" rx="10" fill="#46C7F5"/>
+        <text x="372" y="147" text-anchor="middle" font-family="ui-monospace,monospace" font-size="10" font-weight="700" letter-spacing="0.06em" fill="#08131c">EVENTO</text>
+        <text x="372" y="161" text-anchor="middle" font-family="ui-monospace,monospace" font-size="10" font-weight="700" letter-spacing="0.06em" fill="#08131c">tipado</text>
+        <line x1="414" y1="150" x2="428" y2="150" stroke="#46C7F5" stroke-width="2" fill="none" marker-end="url(#ah)"/>
+        <line x1="680" y1="150" x2="696" y2="150" stroke="#46C7F5" stroke-width="2" fill="none" marker-end="url(#ah)"/>
+        <rect x="698" y="128" width="92" height="44" rx="10" fill="#FFB454"/>
+        <text x="744" y="147" text-anchor="middle" font-family="ui-monospace,monospace" font-size="10" font-weight="700" letter-spacing="0.06em" fill="#1a1206">INCIDENTE</text>
+        <text x="744" y="161" text-anchor="middle" font-family="ui-monospace,monospace" font-size="10" font-weight="700" letter-spacing="0.06em" fill="#1a1206">CANDIDATO</text>
+        <line x1="790" y1="150" x2="804" y2="150" stroke="#46C7F5" stroke-width="2" fill="none" marker-end="url(#ah)"/>
+
+        <!-- estado compartido -->
+        <text x="568" y="474" font-family="ui-monospace,monospace" font-size="11" fill="#8090A8" letter-spacing="0.04em">los razonadores leen / escriben aquí &#8595;&#8593;</text>
+        <line x1="164" y1="304" x2="164" y2="488" stroke="#8090A8" stroke-width="1.3" fill="none" stroke-dasharray="3 4" marker-end="url(#ahd)"/>
+        <line x1="555" y1="488" x2="555" y2="242" stroke="#8090A8" stroke-width="1.3" fill="none" stroke-dasharray="3 4" marker-end="url(#ahd)"/>
+        <line x1="996" y1="488" x2="996" y2="422" stroke="#8090A8" stroke-width="1.3" fill="none" stroke-dasharray="3 4" marker-end="url(#ahd)"/>
+        <rect x="14" y="490" width="1172" height="74" rx="12" fill="rgba(70,227,160,.06)" stroke="rgba(70,227,160,.34)"/>
+        <text x="32" y="520" font-family="system-ui,-apple-system,sans-serif" font-size="12.5" font-weight="700" fill="#46E3A0">ESTADO COMPARTIDO</text>
+        <text x="32" y="542" font-family="ui-monospace,monospace" font-size="11" fill="#AEBBD0">situación (pizarra) &#183; registro de identidades y relaciones &#183; series temporales &#183; federación bajo demanda</text>
+
+        <text x="16" y="598" font-family="ui-monospace,monospace" font-size="11" fill="#8090A8" letter-spacing="0.04em">Transversal: control humano &#183; trazabilidad / linaje &#183; soberanía (agnóstico al modelo) &#183; razonadores sin estado</text>
+      </svg>
+    </div>
+    <p class="note reveal">// Percepción y correlación son deterministas y auditables; el razonamiento cognitivo entra solo ante un candidato. Nadie razona sobre la fuente cruda.<br>// SOP = procedimiento operativo estándar (la doctrina de respuesta del cliente).<br>// Los discriminantes son tool-use del razonador: consultas al registro o federadas a sistemas externos para buscar datos y descartar hipótesis (búsqueda proactiva).</p>
+  </div>
+</section>
+
+<!-- 06 — COMPETENCIA -->
+<section class="slide" data-label="Mercado">
+  <div class="wrap">
+    <p class="eyebrow reveal">Mercado</p>
+    <h2 class="reveal">«Nadie lo hace» — con matices.</h2>
+    <p class="lede reveal tight">Nadie ofrece el motor cognitivo de fusión multidominio soberano. Pero las capas de abajo ya están ocupadas.</p>
+    <div class="cstack reveal">
+      <div class="clayer moat">
+        <div class="top-row"><span class="t">Fusión cognitiva multidominio</span><span class="who">Palantir · hueco por ocupar</span></div>
+        <div class="sub">Correlación ciber + físico + operacional, razonamiento, anticipación. ← La ambición de IndraMind.</div>
+      </div>
+      <div class="clayer">
+        <div class="top-row"><span class="t">Gestión de llamadas · NG911 / PSAP</span><span class="who">Carbyne · Motorola · Hexagon</span></div>
+        <div class="sub">Solape directo con las demos. Ya desplegado a escala — y varios son US-cloud (débiles en soberanía).</div>
+      </div>
+      <div class="clayer">
+        <div class="top-row"><span class="t">Conectividad misión crítica</span><span class="who">Ericsson (dueña de Vonage/Carbyne)</span></div>
+        <div class="sub">La «tubería» 4G/5G. Complementador más que competidor — pero mira hacia arriba.</div>
+      </div>
+    </div>
+    <p class="pull reveal">El foso: <span class="hl">fusión multidominio · soberanía · doctrina vertical</span>. Y no reconstruir la centralita: integrarla como una fuente más.</p>
+  </div>
+</section>
+
+<!-- 06b — SOBERANÍA -->
+<section class="slide" data-label="Soberanía">
+  <div class="wrap">
+    <p class="eyebrow reveal">Soberanía</p>
+    <h2 class="reveal">Tu dato no sale<br>de tu casa.</h2>
+    <p class="lede reveal tight">No replicamos tu padrón ni la DGT. Guardamos <strong>identidades y relaciones</strong>; el resto lo consultamos bajo demanda, con auditoría. El dueño sigues siendo tú.</p>
+    <div class="sov reveal">
+      <div class="zone own">
+        <div class="z-tag">Plataforma IndraMind · soberana, en tu casa</div>
+        <h3>Guardamos identidades y relaciones</h3>
+        <div class="items"><span>pizarra (el ahora)</span><span>registro de identidades</span><span>relaciones + procedencia</span></div>
+      </div>
+      <div class="link">
+        <div>consulta<br>federada &#8594;</div>
+        <div>&#8592; respuesta<br>auditada</div>
+        <div class="a">bajo demanda</div>
+      </div>
+      <div class="zone">
+        <div class="z-tag">Sistemas del cliente</div>
+        <h3>El dato sensible se queda aquí</h3>
+        <div class="items"><span>padrón</span><span>DGT</span><span>flota</span><span>catastro</span><span>vídeo</span></div>
+      </div>
+    </div>
+    <p class="pull reveal">Minimización de datos = <span class="hl">soberanía y RGPD by design</span>. La respuesta que gana la reunión con un DPD.</p>
+  </div>
+</section>
+
+<!-- 07 — POC -->
+<section class="slide" data-label="La PoC">
+  <div class="wrap">
+    <p class="eyebrow reveal">Recomendación</p>
+    <h2 class="reveal">Una rebanada vertical fina,<br>en semanas.</h2>
+    <p class="lede reveal tight">Caso <strong>València — detección de aglomeraciones no planificadas</strong>. De extremo a extremo, con datos simulados.</p>
+    <div class="pipe reveal">
+      <div class="pnode"><div class="n">01</div><div class="pt">Simulador</div><div class="pd">Fuentes sintéticas con fast-forward</div></div>
+      <div class="pnode"><div class="n">02</div><div class="pt">Percepción</div><div class="pd">Eventos tipados</div></div>
+      <div class="pnode"><div class="n">03</div><div class="pt">Baselines + CEP</div><div class="pd">Detecta la anomalía</div></div>
+      <div class="pnode"><div class="n">04</div><div class="pt">Especialista</div><div class="pd">Hipótesis · confianza · proyección</div></div>
+      <div class="pnode"><div class="n">05</div><div class="pt">Estado</div><div class="pd">SQLite / Postgres — no grafo</div></div>
+      <div class="pnode"><div class="n">06</div><div class="pt">Panel</div><div class="pd">Estética IndraMind</div></div>
+    </div>
+    <div class="metrics reveal">
+      <div class="metric"><div class="mv">≥ 20 min</div><div class="ml">Antelación sobre detección humana</div></div>
+      <div class="metric"><div class="mv">&lt; umbral</div><div class="ml">Falsos positivos pactados</div></div>
+      <div class="metric"><div class="mv">100 %</div><div class="ml">Trazabilidad de conclusiones</div></div>
+    </div>
+    <p class="note reveal">// Éxito medido por escenarios conductuales, no por opiniones. Equipo: 3 personas + Claude.</p>
+  </div>
+</section>
+
+<!-- 08 — EQUIPO Y TIEMPOS -->
+<section class="slide" data-label="Cómo">
+  <div class="wrap">
+    <p class="eyebrow reveal">Cómo</p>
+    <h2 class="reveal">Equipo pequeño.<br>Iterativo, vertical, con IA.</h2>
+    <div class="grid g2">
+      <div class="card bad reveal">
+        <div class="k">Enfoque actual</div>
+        <h3>Big-bang</h3>
+        <p><span class="cross">✕</span> Big-bang: equipo grande, meses de arranque<br><span class="cross">✕</span> Módulos sin foto global<br><span class="cross">✕</span> Difícil de demostrar pronto</p>
+      </div>
+      <div class="card good reveal">
+        <div class="k">Propuesta</div>
+        <h3>Estilo startup</h3>
+        <p><span class="tick">✓</span> Equipo pequeño · Claude a fondo<br><span class="tick">✓</span> Semanas hasta una v0.1<br><span class="tick">✓</span> Métricas y demo real</p>
+      </div>
+    </div>
+    <p class="pull reveal">Los «2 años» no son ingeniería del motor: son la <span class="hl">consultoría cognitiva</span> de volcar la doctrina de cada cliente.</p>
+  </div>
+</section>
+
+<!-- 09 — CIERRE -->
+<section class="slide close" data-label="Próximos pasos">
+  <div class="eye-wrap"><div class="eye"><div class="pupil"></div></div></div>
+  <div class="wrap">
+    <p class="eyebrow reveal">Próximos pasos</p>
+    <h2 class="reveal">Decidir el camino,<br>y empezar la PoC.</h2>
+    <ul class="clean reveal">
+      <li><b>Zanjar el enfoque:</b> fusión y razonamiento sobre datos bien modelados — no ontología pesada como motor.</li>
+      <li><b>Arrancar la PoC de València:</b> vertical, con Claude, con métricas de éxito acordadas.</li>
+      <li><b>Definir equipo y liderazgo técnico:</b> pequeño, con autoridad y criterio.</li>
+    </ul>
+    <p class="pull reveal">De datos integrados a <span class="hl">inteligencia real</span> — con criterio, no con <span class="hl-red">hype</span>.</p>
+  </div>
+</section>
+
+<!-- BACKUP — DÓNDE VIVE CADA DATO -->
+<section class="slide backup" data-label="Backup" data-backup="1">
+  <div class="wrap">
+    <p class="eyebrow reveal">Backup · si preguntan por el detalle</p>
+    <h2 class="reveal">¿Dónde vive cada dato?</h2>
+    <p class="lede reveal tight">El <strong>modelo/esquema</strong> es la gramática común (transversal, en código). Lo que se reparte son las <strong>instancias</strong> que lo cumplen.</p>
+    <div class="btable-wrap reveal">
+      <table class="btable">
+        <thead><tr><th>Qué dato</th><th>Dónde vive</th><th>Ritmo de cambio</th></tr></thead>
+        <tbody>
+          <tr><td><b>Eventos</b> tipados</td><td>bus + almacén de eventos / series temporales</td><td class="m">segundos</td></tr>
+          <tr><td><b>Entidades + relaciones</b> (identidad)</td><td>registro de identidades y relaciones (Postgres)</td><td class="m">meses</td></tr>
+          <tr><td><b>Incidentes · hipótesis · objetos operativos</b></td><td>situación / pizarra (el «ahora»)</td><td class="m">segundos–minutos</td></tr>
+          <tr><td><b>Valores pesados / sensibles</b> (padrón, combustible…)</td><td>sistema de origen — federado, con puntero</td><td class="m">bajo demanda</td></tr>
+          <tr><td><b>Modelo / esquema</b> (tipos, relaciones)</td><td>código · <i>schema registry</i> — transversal</td><td class="m">—</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="note reveal">// Escala de decisión: segundos → pizarra · meses → registro · bajo demanda → federado · pesado/sensible → se queda donde está, con puntero.</p>
+  </div>
+</section>
+
+<div class="foot">IndraMind Security · Diagnóstico técnico independiente · Confidencial · Borrador para discusión · 2026-07-15</div>
+
+<script>
+  (function () {
+    var slides = Array.prototype.slice.call(document.querySelectorAll('.slide'));
+    var rail = document.getElementById('rail');
+    var cnum = document.getElementById('cnum');
+    var ctot = document.getElementById('ctot');
+
+    // Total counts only main slides (excludes backup/appendix)
+    var mainCount = slides.filter(function (s) { return !s.hasAttribute('data-backup'); }).length;
+    if (ctot) ctot.textContent = String(mainCount).padStart(2, '0');
+
+    // Progress rail
+    function onScroll() {
+      var h = document.documentElement;
+      var max = h.scrollHeight - h.clientHeight;
+      var p = max > 0 ? (h.scrollTop || document.body.scrollTop) / max : 0;
+      rail.style.width = (p * 100).toFixed(2) + '%';
+    }
+    document.addEventListener('scroll', onScroll, { passive: true });
+    onScroll();
+
+    // Reveal + active counter
+    var revs = Array.prototype.slice.call(document.querySelectorAll('.reveal'));
+    if ('IntersectionObserver' in window) {
+      var ro = new IntersectionObserver(function (entries) {
+        entries.forEach(function (e) { if (e.isIntersecting) { e.target.classList.add('in'); ro.unobserve(e.target); } });
+      }, { threshold: 0.12 });
+      revs.forEach(function (el) { ro.observe(el); });
+
+      var so = new IntersectionObserver(function (entries) {
+        entries.forEach(function (e) {
+          if (e.isIntersecting) {
+            if (e.target.hasAttribute('data-backup')) {
+              cnum.textContent = 'B';
+            } else {
+              var i = slides.indexOf(e.target);
+              cnum.textContent = String(i + 1).padStart(2, '0');
+            }
+          }
+        });
+      }, { threshold: 0.5 });
+      slides.forEach(function (s) { so.observe(s); });
+    } else {
+      revs.forEach(function (el) { el.classList.add('in'); });
+    }
+  })();
+</script>
