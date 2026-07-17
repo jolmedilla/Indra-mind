@@ -148,10 +148,17 @@ reunión.»*
 **Objetivo:** proponer el camino concreto y demostrable.
 **Qué contar:** una **rebanada vertical fina** sobre Valencia (aglomeraciones), de extremo a
 extremo, con datos simulados: simulador → percepción → baselines+CEP → especialista → estado
-(SQLite/Postgres, **no grafo**) → panel. Éxito por **métricas conductuales**: antelación ≥20 min,
-falsos positivos < umbral, 100% trazabilidad.
+(SQLite/Postgres, **no grafo**) → panel. Éxito por **métricas conductuales**: ≥90% de eventos
+reales detectados **con ≥20 min de antelación** (recall con plazo), **≤ N falsas alarmas/turno**
+(punto pactado en la curva PR), 100% trazabilidad.
 **Clave:** *«En semanas, no en años. Equipo pequeño + Claude. Y demuestra que la arquitectura
 depende de funciones, no de tecnología pesada.»*
+**Si preguntan por las métricas (perfil técnico):** no optimizamos un solo número — es un
+trade-off recall-con-plazo vs. falsas alarmas, y el cliente elige el punto en la curva PR. Se
+calcula **a posteriori por replay**: registramos verdad de referencia + emisiones con marca de
+tiempo (en la PoC, el simulador es la verdad) y re-ejecutamos a distintos umbrales. Ojo
+base-rate: en eventos raros, buena especificidad no implica buena precisión → mejor «falsas
+alarmas/turno» que precisión a secas.
 
 ## 13 · Equipo y tiempos
 
