@@ -559,7 +559,7 @@
         <div class="items"><span>padrón</span><span>DGT</span><span>flota</span><span>catastro</span><span>vídeo</span></div>
       </div>
     </div>
-    <p class="pull reveal">Minimización de datos = <span class="hl">soberanía y RGPD by design</span>. La respuesta que gana la reunión con un DPD.</p>
+    <p class="pull reveal">Minimización de datos = <span class="hl">soberanía y RGPD by design</span>. La respuesta que gana la reunión con un DPD (Delegado de Protección de Datos).</p>
   </div>
 </section>
 
@@ -685,6 +685,45 @@
       </table>
     </div>
     <p class="note reveal">// Escala de decisión: segundos → pizarra · meses → registro · bajo demanda → federado · pesado/sensible → se queda donde está, con puntero.</p>
+  </div>
+</section>
+
+<!-- BACKUP — REGISTRO DE IDENTIDADES -->
+<section class="slide backup" data-label="Backup" data-backup="1">
+  <div class="wrap">
+    <p class="eyebrow reveal">Backup · el registro de identidades</p>
+    <h2 class="reveal">Identidad sin copiar el dato.</h2>
+    <p class="lede reveal tight">Es una tabla de <strong>enlaces y punteros</strong>, no un almacén. Nodo = id sintético; aristas = relaciones con fuente y fecha.</p>
+    <div class="grid g2">
+      <div>
+<div class="codeblk reveal"><span class="cm"># registro de identidades (sin PII)</span>
+entity:      E-7731  (persona)      <span class="cm"># id sintético</span>
+match_key:   sha256(sal + DNI)      <span class="cm"># enlazar · irreversible</span>
+ref[DGT]:    veh-4471               <span class="cm"># recuperar · puntero</span>
+ref[caso23]: per-99120  (match: DNI)
+relacion:    E-7731 OWNS V-4482  (DGT)</div>
+      </div>
+      <div>
+        <div class="card accent reveal"><div class="k">Enlazar (match)</div><p><b>Hash + sal del DNI</b>. Irreversible: no se descifra. Solo se <b>compara</b> — re-hasheo el DNI entrante y busco el mismo hash. Sé que es el mismo actor sin guardar el DNI.</p></div>
+        <div class="card reveal" style="margin-top:1rem;"><div class="k">Recuperar (retrieval)</div><p>No uso el DNI: uso el <b>handle</b>, el id del registro <b>en esa fuente</b> («vehículo 4471 en la DGT»). Con él consulto bajo demanda — sin descifrar nada.</p></div>
+      </div>
+    </div>
+    <p class="note reveal">// ¿Y si la fuente solo se consulta por el DNI? No se hashea: se <b>tokeniza</b> (mapeo reversible en una bóveda protegida y auditada).</p>
+  </div>
+</section>
+
+<!-- BACKUP — SEUDONIMIZACIÓN -->
+<section class="slide backup" data-label="Backup" data-backup="1">
+  <div class="wrap">
+    <p class="eyebrow reveal">Backup · seudonimización y RGPD</p>
+    <h2 class="reveal">Seudonimización,<br>no anonimización.</h2>
+    <p class="lede reveal tight">El registro es re-identificable cruzando las fuentes: por tanto <strong>sigue siendo dato personal</strong>. Lo tratamos con minimización y seudonimización.</p>
+    <div class="grid g2">
+      <div class="card good reveal"><div class="k">Qué guardamos</div><ul class="reflist"><li><span class="tick">✓</span> id sintético · hash de match</li><li><span class="tick">✓</span> handles (punteros) a la fuente</li><li><span class="tick">✓</span> relaciones + procedencia (fuente · fecha)</li><li><span class="tick">✓</span> auditoría de cada acceso</li></ul></div>
+      <div class="card bad reveal"><div class="k">Qué NO guardamos</div><ul class="reflist"><li><span class="cross">✕</span> nombres ni atributos identificativos</li><li><span class="cross">✕</span> copias de registros (padrón, DGT)</li><li><span class="cross">✕</span> el histórico de la fuente</li></ul></div>
+    </div>
+    <p class="note reveal">// El nombre solo se cachea con TTL en la situación durante un incidente activo; el registro durable nunca lo guarda.</p>
+    <p class="pull reveal">«Guardamos identidades <span class="hl">seudónimas</span> y sus relaciones; el dato identificativo se queda en tu sistema y se consulta con auditoría.»</p>
   </div>
 </section>
 

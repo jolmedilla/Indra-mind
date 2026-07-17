@@ -245,6 +245,38 @@ pizarra y se despiertan por suscripción.
   que permite que los razonadores sean **sin estado** (reconstruyen contexto leyendo de aquí).
   No es paso de mensajes en cadena: es **estado compartido + suscripciones**.
 
+**Cómo se implementa el registro de identidades (sin copiar el dato).** Es una **tabla de
+enlaces y punteros**, no un almacén. La resolución de identidad usa **dos identificadores con
+trabajos distintos** — esta es la clave que suele confundir:
+
+- **`match_key` — para ENLAZAR** (deduplicar/resolver): un **hash con sal** de una clave fuerte
+  (DNI, matrícula…). Es **irreversible y nunca se descifra**: cuando llega una clave nueva se
+  **re-hashea y se compara**. Así se afirma que es el mismo actor **sin guardar la clave en claro**.
+- **`handle` — para RECUPERAR**: el identificador propio del registro **en cada fuente**
+  («veh-4471 en la DGT»), guardado como puntero. La consulta federada es *«dame el registro 4471
+  de la DGT»*, **no** *«dame a la persona con DNI X»*. No hace falta descifrar nada.
+
+```yaml
+entity:      { id: E-7731, tipo: persona }               # id sintético, sin nombre
+match_key:   { entity: E-7731, hash: sha256(sal+DNI) }   # ENLAZAR · irreversible
+entity_ref:  { entity: E-7731, fuente: DGT,       handle: veh-4471, desde: ..., confianza: 1.0 }
+             { entity: E-7731, fuente: caso_2023,  handle: per-99120, metodo: match_DNI }
+relacion:    { origen: E-7731, tipo: OWNS, destino: V-4482, fuente: DGT }
+```
+
+- **Excepción:** si una fuente **solo** se consulta por la clave sensible (un API que exige el
+  DNI), no se puede hashear: se **tokeniza** — un token en el registro y el mapeo token↔DNI en una
+  **bóveda separada, protegida y auditada** (reversible, pero aislada). Tokenización (reversible)
+  vs. hash (irreversible): herramientas distintas para trabajos distintos.
+
+**Seudonimización, no anonimización (RGPD).** Un id sintético **re-identificable** cruzando las
+fuentes **sigue siendo dato personal**. El marco correcto es **seudonimización + minimización**,
+no «no tenemos datos personales» (un DPD lo rebatiría). Se guarda: id sintético, hash de match,
+handles, relaciones, procedencia (fuente+fecha), auditoría de accesos. **No** se guarda: nombres
+ni atributos identificativos, copias de registros (padrón, DGT), histórico de la fuente. El nombre
+solo se **cachea con TTL** en la situación durante un incidente activo; el registro durable nunca
+lo guarda.
+
 ### E · Correlación
 - **Motor CEP**: correlación espacio-tiempo-entidad → incidentes candidatos. Reglas = config.
   Motores tipo **Esper / Flink CEP / Drools Fusion** (o reglas llanas en la PoC).
