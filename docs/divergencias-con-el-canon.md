@@ -5,6 +5,10 @@
 > canon del repo `indramind-poc` en su estado del 30-jul-2026: documento de requisitos v0.4,
 > registro de decisiones ADR-001..037, decisiones de PoC POC-001..005, índice v3.3.
 >
+> **Actualizado al 5-ago-2026** con la pasada delta sobre el canon v0.5.1 (ADR-038..048,
+> REQ-01..61, `/banco` creado). Va en su propia sección, más abajo: **ninguna de las cuatro
+> divergencias se cae, dos se refinan y una afirmación de este documento queda corregida.**
+>
 > Es el inventario de en qué nos separamos del canon, para poder llevar a José una conversación
 > por elemento en lugar de una impresión general.
 
@@ -193,6 +197,95 @@ criterio de éxito sea que un suceso de clase sin suscriptor y gravedad alta alc
 humana **con la capa generativa caída**. Si pasa, la tensión está resuelta; si no, hemos
 encontrado el agujero antes que Paradigma.
 
+## Pasada delta · el canon del 4-ago (v0.5.1, ADR-038..048)
+
+Entre el 31-jul y el 4-ago el canon avanzó más que en toda la semana anterior: requisitos de
+v0.4 a **v0.5.1**, ADR de 037 a **048**, banco de REQ-58 a **REQ-61**, glosario a 59 entradas, y
+`/banco` creado con su convención fijada. Además creció una espina dorsal de evidencia que antes
+no existía —36 fuentes primarias del corpus de contraste, 20 planes territoriales fichados, la
+visita al CECOES 1-1-2 de Canarias— y un catálogo de 21 visuales.
+
+Esto importa por una razón práctica: **lo que va a llegar a Paradigma es la v0.5.1, no la v0.4
+que validamos.** Lo que sigue es el contraste de lo nuevo.
+
+### Efecto sobre las cuatro divergencias
+
+**Divergencia 1 · gana una segunda puerta, y buena.** ADR-043 declara los **orígenes reconocidos
+de calificación**: donde la primera atención de la demanda ocurre en una sala ajena que ya la
+procesa con personas —los operadores de demanda canarios, el 112 valenciano que transfiere al
+centro de coordinación—, el incidente propio **nace en el momento de la entrada** citando ese
+acto humano de origen como su calificación. No se exige recalificar en destino; la primera
+actuación se registra como asunción, con plazo cuyo silencio escala. Lo no reconocido entra como
+detección bajo obligación de atención. El invariante aguanta —todo incidente sigue naciendo de
+un acto humano citable, propio o reconocido— y se evita añadir ceremonia donde el cliente hoy no
+la tiene. Nuestra corrección de vocabulario sigue siendo válida; solo deja de ser cierto que la
+única puerta sea la calificación en destino.
+
+**Divergencia 2 · intacta y reforzada.** ADR-040 añade el **negativo** de la correlación —el
+atributo de **disyunción**: la detección que nace sin plegarse al incidente que eclipsa la
+sala— como atributo computado y trazado. No relaciona detecciones antes de calificar: computa
+que *no* se relacionan. La prohibición de ADR-018 sigue en pie.
+
+**Divergencia 3 · es donde se ha movido todo, y hay que releerla entera.** Cuatro ADR refinan
+ADR-028:
+
+- **ADR-047 · patrón de catálogo.** El motor publica catálogos cerrados de **funciones de
+  catálogo** parametrizables, y entre ellas el **combinador de grados**, que es la única función
+  *no seleccionable*: única y obligatoria en todo despliegue, para que un mismo grado signifique
+  lo mismo venga del pack que venga. Esto **cierra exactamente el hueco que señalábamos**: nuestro
+  texto dejaba el grado sin dueño explícito; ahora tiene mecanismo, escala y tablas de anclaje
+  versionadas. El canon llegó más lejos que nosotros.
+- **ADR-044 · heurísticas de razonamiento** y **ADR-045 · relectura del plan** amplían lo que la
+  capa generativa puede aportar —el olfato del experto senior como doctrina versionada; una
+  tercera pregunta del mandato que audita el plan vigente, no solo el mundo— manteniendo el muro:
+  no escriben grados, no otorgan atención, no otorgan ejecución.
+- **ADR-048 · política de verificación** es el movimiento real y merece escrutinio. La capa
+  generativa nombra una comprobación y **la doctrina puede otorgarle ejecución automática
+  acotada**, cuyo resultado mueve el grado. Es una vía indirecta del modelo al número que ADR-028
+  no contemplaba. Los guardarraíles son serios: solo comprobaciones cuya condición de éxito sea
+  expresable en la gramática declarada, evaluación siempre determinista, movimiento del grado
+  **solo por el combinador** y con **techo por debajo del peso de un discriminante declarado**,
+  acotación a entidades del propio expediente, prohibición del barrido abierto, doble puerta para
+  lo sensible, y **cero cláusulas por defecto**. El argumento de producto es fuerte: la hipótesis
+  lateral debe llegar resuelta y no cobrarle al operador un peaje de atención por instancia.
+  **Veredicto: aceptable, pero es la pieza a vigilar** — es el único sitio del canon donde una
+  salida del modelo llega al grado, aunque sea por la puerta determinista.
+
+**Divergencia 4 · confirmada, con mecanismo.** El `banco/README.md` fija un **contrato del arnés**
+con tres propiedades que son exactamente nuestra tesis: **solo puerta delantera** —todo entra por
+el bus, los consultables y la API de acciones; ningún gancho de prueba altera comportamiento—, el
+arnés como dueño del reloj de tiempo de evento, y el expediente como única superficie de
+aserción. Y ADR-046 fija la **ciudad de referencia**: un único mundo sintético con todos los
+packs de fábrica activos a la vez, del que el València sintético de la PoC es la semilla
+(`REQ-xx-REF-nn`; el uso vive en **suites**, no en el identificador).
+
+### Una afirmación nuestra que queda corregida
+
+Escribimos que la tensión entre el **prior suelo** de ADR-028 y el **dominio abierto** de ADR-032
+hacía que «lo más importante entre con el grado más bajo», y propusimos un escenario de banco.
+**La premisa era equivocada y hay que retirarla:** ADR-048 (5) deja explícito que la atención es
+territorio exclusivo de sus tres vías —timbre por anclajes, obligaciones por clase y gravedad
+anclada— y que **las tres son ya independientes del grado**. Un suceso grave sin doctrina no
+depende de su grado para llegar a un humano: depende de que su clase esté bajo obligación, que es
+justo lo que ADR-032 declara. Y ADR-040 añade la **escalada ante plazo en riesgo**, que era la
+mitad que faltaba: la obligación cuya atención no llega escala al puesto alternativo y al jefe de
+sala, dentro de plazo, en vez de expirar en silencio.
+
+Lo que sobrevive de aquello, ya sin filo de objeción, es **el escenario**: sigue valiendo la pena
+que el banco tenga una fila donde un suceso de clase sin suscriptor y gravedad alta alcanza
+atención humana **con la capa generativa caída**. Deja de ser una sospecha y pasa a ser la
+verificación de una promesa que el canon ya hace.
+
+### Lo que esto cambia en la conversación con Paradigma
+
+Vale la pena decírselo a José tal cual: el canon ya no es una opinión bien escrita. ADR-042 (la
+validación reforzada, dos firmas para el aviso público) nace de la FCC tras la falsa alerta de
+Hawái y del flujo de aprobación de un producto de mercado; ADR-040 (el eclipse de sala) se apoya
+en el semáforo de presión asistencial del CECOES, en el correo de las 18:43 durante la DANA y en
+la saturación documentada en Grenfell. Un documento con esa espina dorsal es mucho más difícil de
+despachar con un «esto no se puede» — que es, además, lo que ADR-035 (4) ya prohíbe hacer sin
+identificador.
+
 ## Lo que tenemos y el canon no: candidato a aportación
 
 El mecanismo concreto de resolución de identidades de
@@ -217,11 +310,37 @@ clase de dato al cierre del incidente, que tiene principios pero no mecanismo, y
 resolver la tensión entre esa minimización, el replay que exige conservar eventos, la
 auditoría de accesos y el valor probatorio del expediente.
 
-**Cómo entraría, según las reglas del propio repo.** Como nota de análisis en `docs/apoyo/`,
-con la sección final obligatoria «Qué aprendemos y qué trasladamos al canon», y con un ADR
-detrás si la decisión se ratifica. Nunca como parche a un documento existente, y con el
-borrador de escenario correspondiente para el banco, porque ningún hallazgo entra al diseño
-sin su escenario.
+**Verificado contra el canon v0.5.1 (5-ago).** Sigue siendo un hueco, y de los limpios: en el
+maestro de requisitos y en los 48 ADR no aparece ni una vez «seudonimización», «anonimización»,
+«tokenización», «bóveda» ni «resolución de identidad». «Retención y purga» aparece tres veces en
+los requisitos y en ningún ADR: es decir, sigue siendo **consulta abierta**, exactamente donde la
+dejamos.
+
+**Cómo entraría, según las reglas del propio repo.** Como nota de análisis en `docs/apoyo/`
+—hoy con la convención de fecha delante que fijó ADR-039: `2026-08-nota-…`—, con la sección
+final obligatoria «Qué aprendemos y qué trasladamos al canon», y con un ADR detrás si la
+decisión se ratifica. Nunca como parche a un documento existente, y con el borrador de escenario
+correspondiente para el banco, porque ningún hallazgo entra al diseño sin su escenario.
+
+## La puerta que el canon nos deja abierta: el esquema del banco
+
+El `banco/README.md` cierra con un **pendiente declarado** literal:
+
+> «El esquema concreto de instancia y el validador `check_banco` —integridad referencial contra
+> configuración semántica, consultables y funciones de catálogo (ADR-047)— son **decisión de
+> construcción de la PoC**, con la prueba de experto (CFG-05) como criterio temprano.»
+
+Por la frontera de ADR-035 eso es terreno de construcción, es decir, nuestro. Y está en el camino
+crítico: `banco/instancias/` y `banco/suites/` están hoy vacías, la fase 1 de la hoja de ruta no
+puede cerrar sin ellas, y la puerta de la fase 3 dice que `/src` no arranca hasta que banco y
+packs estén validados en simulación.
+
+Es además la forma más limpia de aportar sin pisar a José: el contenido de los escenarios es
+suyo —él los revisa uno a uno, es su puerta de fase—; el **formato ejecutable** y su validador
+son nuestros. Todo lo que hace falta ya está fijado por él y no hay que inventarlo: la anatomía
+de cinco bloques (identidad · versiones fijadas · dado · cuando · entonces), la convención
+historia-más-contrato, el contrato del arnés y la nomenclatura `REQ-xx-REF-nn` con las suites
+fuera del identificador.
 
 ## Lo que la pasada de vocabulario concedió de más (revertido el 1-ago)
 
@@ -298,11 +417,18 @@ conserva porque explicó algo en su momento.
 
 ## Pendiente de verificar
 
-Este contraste se hizo contra el canon tal como estaba el 30-jul-2026 —commit `ee0fe75`,
-ADR-037, índice v3.3, que sigue siendo la punta a 1-ago— y **sin haber podido leer el hilo de
-WhatsApp con José desde el 7 de julio** (el conector estaba caído y luego limitado por cuota).
-Si en esa conversación hay instrucciones sobre el repo que no estén ni en su `CLAUDE.md` ni en
-las instrucciones del proyecto, este documento puede necesitar una revisión.
+El contraste base se hizo contra el canon del 30-jul-2026 (commit `ee0fe75`, ADR-037, índice
+v3.3) y la pasada delta contra el del 4-ago (commit `1a69d09`, v0.5.1, ADR-048, índice v3.28),
+leído desde `origin/main` sin tocar el árbol de trabajo del repo de José.
+
+Sigue **sin leerse el hilo de WhatsApp con José desde el 7 de julio** (el conector estaba caído
+y luego limitado por cuota). Si en esa conversación hay instrucciones sobre el repo que no estén
+ni en su `CLAUDE.md` ni en las instrucciones del proyecto, este documento puede necesitar una
+revisión.
+
+De la pasada delta quedan **dos cosas leídas por encima**, por no ser camino crítico para el
+viernes: el corpus de contraste (36 fichas de fuentes primarias) y las 20 fichas de planes
+territoriales. Se ha leído su efecto sobre los ADR, no las fichas en sí.
 
 Las transcripciones verbatim de las llamadas del 29 y el 31 de julio **sí** están ya leídas
 (Granola, 1-ago), y son la fuente de las citas de este documento. La revisión de postura y las
