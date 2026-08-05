@@ -5,6 +5,13 @@
 >
 > Complementa a [`arquitectura-opinion-inicial.md`](arquitectura-opinion-inicial.md): desarrolla
 > la capa de ingesta/normalización que allí se identifica como el cimiento del producto.
+>
+> **Pasada de vocabulario (2026-08-01, revisada).** Este documento se escribió sin ver el
+> registro de decisiones de José. Se ha alineado su terminología con el canon vigente del repo
+> `indramind-poc` **solo donde el canon es normativo** — es decir, en el ámbito del motor
+> cognitivo (ADR-035). Los nombres de piezas de **construcción** (almacenes, pizarra, topología)
+> son nuestros y se conservan. Ninguna afirmación técnica ha cambiado; el inventario de las
+> divergencias de fondo está en [`divergencias-con-el-canon.md`](divergencias-con-el-canon.md).
 
 ## Qué es
 
@@ -72,7 +79,7 @@ variabilidad debe caer en solo **tres sitios configurables**:
 |---|---|
 | **Qué fuentes** hay | Conectores de un **catálogo creciente** + **SDK** para el que falte. El cliente N reutiliza el 80–90%. |
 | **Qué catástrofes/alarmas** | **Taxonomía y modelo canónico extensible** (tipos, severidad, atributos). Un tipo nuevo es config + quizá un modelo ML, no un rediseño. |
-| **Cómo se reacciona** | **Reglas de correlación** y **playbooks** de respuesta + modelos ML específicos. |
+| **Cómo se reacciona** | **Reglas de correlación** y **packs de doctrina** de respuesta + modelos ML específicos. |
 
 Lo que lo hace posible técnicamente:
 
@@ -83,7 +90,7 @@ Lo que lo hace posible técnicamente:
 - **Mapeos declarativos, no código.** Dar de alta una fuente = rellenar configuración de mapeo.
   *Onboarding* de días, no meses.
 - **El motor de correlación opera sobre el modelo canónico** → casi agnóstico al cliente. Por
-  cliente se añaden reglas y playbooks, no se reconstruye el motor.
+  cliente se añaden reglas y packs de doctrina, no se reconstruye el motor.
 - **Estándares del dominio** (CAP, EDXL, OGC, NG112) para no inventar taxonomía y para
   interoperar con lo que el cliente ya tiene.
 

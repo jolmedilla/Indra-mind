@@ -9,6 +9,15 @@
 > [`arquitectura-opinion-inicial.md`](arquitectura-opinion-inicial.md) y
 > [`fontaneria-de-datos.md`](fontaneria-de-datos.md). Contexto fáctico en
 > [`vision-producto.md`](vision-producto.md).
+>
+> **Pasada de vocabulario (2026-08-01, revisada el mismo día).** Este documento se escribió sin
+> ver el registro de decisiones de José, que corría en paralelo. Se ha alineado su terminología
+> con el canon vigente del repo `indramind-poc` (ADR-001, 003, 013, 015) **solo donde el canon
+> es normativo**: el ámbito del **motor cognitivo**. Los nombres de piezas de **construcción**
+> son nuestros y se conservan, porque ADR-035 declara ese ámbito libre. **Ninguna afirmación
+> técnica se ha reescrito:** donde el canon decidió después algo distinto de lo que aquí se
+> propone, el texto se conserva y se marca con **[DIVERGENCIA n]**, cuyo desarrollo está en
+> [`divergencias-con-el-canon.md`](divergencias-con-el-canon.md).
 
 ## 1. Resumen ejecutivo (lo que llevaría a la reunión)
 
@@ -16,7 +25,7 @@
    es «física nuclear»: es correlación multi-fuente + razonamiento lateral acotado + una
    buena capa de presentación. Un LLM actual ya hace el razonamiento; el valor está en la
    **arquitectura que lo orquesta en tiempo (casi) real y lo hace fiable, trazable y
-   soberano**.
+   soberano**. **[DIVERGENCIA 3]** — el canon es más restrictivo con el papel del LLM.
 
 2. **Mi hipótesis sin sesgo se confirma:** el bloqueo de Paradigma es el patrón de
    «arquitectura organizada alrededor de una tecnología (ontologías) en vez del dominio», y
@@ -101,6 +110,12 @@ La buena noticia: **ya existe una arquitectura de referencia sólida** en el doc
 de razonamiento en tres niveles» que José trabajó con Fable, y **coincide casi punto por
 punto con mi línea base sin sesgo**. La adopto. Síntesis:
 
+> Nota de ámbito: el canon retiró después «arquitectura de referencia» como **nivel intermedio
+> del canon** —una capa apartable entre la norma y la libertad— y dejó dos ámbitos con nombre
+> vinculante: el **motor cognitivo**, que es la norma íntegra, y la **construcción**, que es
+> libertad de quien construye con el banco de escenarios como juez único (ADR-035). Lo que
+> sigue pertenece, en esos términos, unas veces al motor y otras a la construcción.
+
 ### 4.1 Percepción compartida (Nivel 0) — la fontanería
 
 Nadie razona sobre la fuente. Cada fuente se procesa **una vez** y emite **eventos tipados**
@@ -113,16 +128,21 @@ está poniendo el foco.**
 
 | Nivel | Razona sobre | Doctrina | Origen |
 |------|--------------|----------|--------|
-| **1 · Especialista de dominio** | El mundo: ¿qué pasa y por qué? ¿con qué confianza? | Detección/investigación: patrones, hipótesis, discriminantes | **De fábrica, transferible entre clientes** |
-| **2 · Director de incidente** (uno por incidente) | El incidente: ¿qué hago, cuándo aviso, qué propongo? | Respuesta: SOP, misiones, escalado, interrupción al operador | **Del cliente** (sus procedimientos) |
-| **3 · Coordinador de operaciones** (uno por sala/ciudad) | La operación: ¿qué importa ahora? ¿a quién asigno? | Mando: saliencia, arbitraje de recursos, carga del operador | **Del cliente** (sus criterios de mando) |
+| **1 · Razonador de dominio** | El mundo: ¿qué pasa y por qué? ¿con qué confianza? | Detección/investigación: patrones, hipótesis, discriminantes | **De fábrica, transferible entre clientes** |
+| **2 · Razonador de incidente** (uno por incidente) | El incidente: ¿qué hago, cuándo aviso, qué propongo? | Respuesta: SOP, misiones, escalado, interrupción al operador | **Del cliente** (sus procedimientos) |
+| **3 · Razonador de sala** (uno por sala/ciudad) | La operación: ¿qué importa ahora? ¿a quién asigno? | Mando: saliencia, arbitraje de recursos, carga del operador | **Del cliente** (sus criterios de mando) |
+
+> Los nombres de la columna «Nivel» son los del canon (ADR-003), que rebautizó los componentes
+> máquina precisamente porque «director» y «coordinador» se confundían sistemáticamente con
+> personas. Los cargos humanos que les hacen espejo son el operador, el mando del incidente y
+> el jefe de sala: la máquina prepara y propone, la persona decide.
 
 Esto encaja con el modelo de fusión de datos JDL de mi baseline (L1 objeto → L2 situación →
 L3 impacto → L5 interacción) y resuelve limpiamente la confusión de José: **el mapa, las
-misiones y la UX las decide el coordinador/director sobre un catálogo pequeño de objetos
+misiones y la UX las decide el razonador de sala sobre un catálogo pequeño de objetos
 operativos (unidad, misión, ruta, zona, riesgo, decisión, hipótesis) — 10–12 tipos**. El
-coordinador «no sabe qué es un dron»: puntúa relevancia por tipo, fase y rol. Por eso su
-playbook es el más pequeño, no el más grande (30–50 reglas cubren una sala).
+razonador de sala «no sabe qué es un dron»: puntúa relevancia por tipo, fase y rol. Por eso su
+pack es el más pequeño, no el más grande (30–50 reglas cubren una sala).
 
 ### 4.3 Principios que hacen esto fiable (y vendible)
 
@@ -130,12 +150,13 @@ playbook es el más pequeño, no el más grande (30–50 reglas cubren una sala)
   correlación determinista (CEP) → capa cognitiva (LLM) **solo ante evento candidato** →
   razonamiento multi-hipótesis solo en incidentes confirmados. **El LLM no vigila: razona
   cuando algo lo merece.** (Esto responde a la duda de José sobre coste y tiempo real.)
-- **El *trigger* es una suscripción:** cada especialista declara a qué eventos se despierta.
-  Sobre la misma fuente, incendios se suscribe a {humo, llama...} y accidentes a
-  {ralentización...}. Añadir un especialista es **desplegar configuración, no software**.
-- **Fusión:** una situación compartida (pizarra) + un correlador que agrupa por espacio,
-  tiempo y entidades comunes evita incidentes duplicados. Ahí vive la conciencia situacional.
-- **Playbooks = doctrina procedimental** (no enseñar el dominio): disparadores, hipótesis,
+- **El *trigger* es una suscripción:** cada razonador de dominio declara a qué eventos se
+  despierta. Sobre la misma fuente, incendios se suscribe a {humo, llama...} y accidentes a
+  {ralentización...}. Añadir un razonador de dominio es **desplegar configuración, no software**.
+- **Fusión:** una pizarra compartida + un correlador que agrupa por
+  espacio, tiempo y entidades comunes evita incidentes duplicados. Ahí vive la conciencia
+  situacional. **[DIVERGENCIA 2]** — el canon prohíbe relacionar antes de la calificación.
+- **Los packs = doctrina procedimental** (no enseñar el dominio): disparadores, hipótesis,
   necesidad de información por hipótesis, expansiones de datos autorizadas + base legal, umbral
   de interrupción. Los disparadores/políticas corren en **capa determinista (auditable)**; las
   hipótesis y la narrativa, en la **capa cognitiva**.
@@ -143,7 +164,7 @@ playbook es el más pequeño, no el más grande (30–50 reglas cubren una sala)
   conclusión enlaza los eventos y el conocimiento que la sostienen.
 - **Modelo GPS:** el sistema propone; el operador confirma; se recalcula según lo que el
   operador elige. Cada *insight* lleva su *scoring* de confianza.
-- **Configuración declarativa sobre motor genérico:** los especialistas no son N motores
+- **Configuración declarativa sobre motor genérico:** los razonadores de dominio no son N motores
   distintos, son la misma maquinaria con distinta configuración (los «packs de razonamiento» /
   «pastillas de Matrix» de José). Requisitos = **pares escenario → comportamiento esperado**,
   testeables por simulación y *replay*.
@@ -184,10 +205,10 @@ Arquitectura mínima de la PoC (rebanada vertical de extremo a extremo):
    que las fuentes reales de València son «peculiares» y que hay permiso para fabricar datos.
 2. **Capa de percepción → eventos tipados** (modelo de eventos mínimo) sobre esos datos.
 3. **Baselines + CEP determinista** que detectan la anomalía (p. ej. ocupación +7,6σ) y
-   despiertan al especialista.
-4. **Un especialista** (pack «aglomeraciones»): suscripciones, hipótesis en competencia,
+   despiertan al razonador de dominio.
+4. **Un razonador de dominio** (pack «aglomeraciones»): suscripciones, hipótesis en competencia,
    discriminantes, proyección («75% de aforo ~20:15»), emisión con confianza y trazabilidad.
-5. **(Opcional, fase 2 de la PoC) director de incidente**: ciclo de vida + misiones propuestas.
+5. **(Opcional, fase 2 de la PoC) razonador de incidente**: ciclo de vida + misiones propuestas.
 6. **Estado compartido** sobre **SQLite/Postgres** (no grafo) — demuestra la tesis de la
    sección 3.
 7. **Interfaz** tipo panel *ultrawide*, siguiendo la estética de sus demos (ver
@@ -196,14 +217,27 @@ Arquitectura mínima de la PoC (rebanada vertical de extremo a extremo):
 Éxito medido por **escenarios conductuales** (REQ-01…06 del doc de tres niveles): antelación
 ≥20 min, falsos positivos < umbral, 100% de trazabilidad, etc. — métricas, no opiniones.
 
+> Estas tres métricas sobrevivieron al canon casi literalmente: la antelación mínima de veinte
+> minutos sobre la detección humana de referencia y el enlace de toda conclusión con los
+> eventos que la sostienen son hoy presupuesto e invariante del producto (PRE-03, INV-02). El
+> banco vigente, en cambio, ya no va de REQ-01 a REQ-06 sino de **REQ-01 a REQ-58**.
+
 ## 7. Modelo de negocio (secundario, pero con respuesta)
 
 José quiere cobrar por «packs de razonamiento» (config IP) + integración (una vez) +
-mantenimiento (recurrente). Mi matiz de la reunión sigue en pie: **no se puede *estrangular*
+mantenimiento (recurrente).
+
+> El canon resolvió después esta pieza en contra de la formulación de aquí: se cobra por
+> **vertical** —el empaquetado comercial por dominio, que incluye packs, plantillas, mapeos e
+> implantación— y **nunca por pack**, para que las unidades de precio queden desacopladas de
+> las unidades de runtime y la arquitectura pueda refactorizar sin tocar facturas (ADR-015).
+> El renombrado de la etiqueta del tarifario quedó aprobado por José el 23-jul-2026.
+
+Mi matiz de la reunión sigue en pie: **no se puede *estrangular*
 por precio** (recortar sugerencias a quien paga menos) porque lo que se despliega depende de los
 datos y la estructura del cliente, no de su tarifa. Pero **sí hay recurrente defendible**:
 (a) los packs/doctrina como propiedad configurable y versionada; (b) la **«consultoría
-cognitiva»** de volcar la doctrina del cliente (director/coordinador) + curación continua;
+cognitiva»** de volcar la doctrina del cliente (la de incidente y la de sala) + curación continua;
 (c) mantenimiento = el bucle de mejora (correcciones del operador → doctrina versionada). El
 argumento de soberanía refuerza el recurrente: implantar IndraMind es **codificar cómo opera
 esa organización, bajo su control**.

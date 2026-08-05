@@ -5,6 +5,16 @@
 > [`fontaneria-de-datos.md`](fontaneria-de-datos.md) con componentes concretos, formas de
 > datos y flujo. Pensado para responder: ¿qué implemento? ¿qué agentes hay? ¿qué es la
 > fontanería? ¿dónde encajan las ontologías?
+>
+> **Pasada de vocabulario (2026-08-01, revisada el mismo día).** Este documento se escribió sin
+> ver el registro de decisiones de José, que corría en paralelo. Se ha alineado su terminología
+> con el canon vigente del repo `indramind-poc` (ADR-001, 003, 013, 015) **solo donde el canon
+> es normativo**: el ámbito del **motor cognitivo**. Los nombres de piezas de **construcción**
+> —pizarra, almacenes, topología, la propia palabra «arquitectura»— son nuestros y se conservan,
+> porque ADR-035 declara ese ámbito libre. **Ninguna afirmación técnica se ha reescrito:** donde
+> el canon decidió después algo distinto de lo que aquí se propone, el texto se conserva y se
+> marca con **[DIVERGENCIA n]**, cuyo desarrollo está en
+> [`divergencias-con-el-canon.md`](divergencias-con-el-canon.md).
 
 ## 0. La idea que hay que interiorizar (corrige el modelo mental)
 
@@ -15,15 +25,15 @@ gente mezcla:
 | Plano | Qué es | ¿IA? |
 |------|--------|------|
 | **Percepción** | Convertir cada *fuente* en eventos tipados | Modelos especializados (visión, acústica) + estadística. **No LLM.** Una pasada por fuente. |
-| **Correlación** | Agrupar eventos en incidentes candidatos por espacio/tiempo/entidad | **Determinista (CEP).** Reglas. Auditable. **No LLM.** |
-| **Razonamiento** | Formar hipótesis, discriminar, proponer, mandar | **LLM**, pero solo *encima* de candidatos ya correlacionados, y por **dominio**, no por entidad |
+| **Correlación** | Agrupar eventos en **detecciones** por espacio/tiempo/entidad | **Determinista (CEP).** Reglas. Auditable. **No LLM.** |
+| **Razonamiento** | Formar hipótesis, discriminar, proponer, mandar | **LLM**, pero solo *encima* de detecciones ya correlacionadas, y por **dominio**, no por entidad |
 
 - Las **entidades** (hidrante, cámara, sensor, vehículo) son **datos** (filas/nodos), no
   agentes. Nadie pone un LLM «sobre la cámara»: sería N inferencias por cámara (coste
   insostenible) y N realidades distintas.
 - No hay un **orquestador-dios** que lo razona todo. La topología es **pizarra + bus**
   (*blackboard architecture*): un conjunto de **razonadores sin estado** que se **suscriben**
-  a eventos, **leen y escriben** en una situación compartida, y se coordinan a través de ella.
+  a eventos, **leen y escriben** en una pizarra compartida, y se coordinan a través de ella.
 
 **En una frase para la reunión:** *«Percepción compartida (barata), correlación determinista
 (auditable) y razonamiento cognitivo (caro, solo cuando algo lo merece) — tres planos
@@ -88,7 +98,7 @@ FUENTE ──▶ [1 Conector] ──▶ [2 Normalizador] ──▶ Evento tipado
 6. **Bus + estado** (sección 3).
 
 **El punto de producto:** toda la variedad por cliente cae en **3 sitios configurables** —
-qué conectores, qué tipos de evento/catástrofe (taxonomía), qué reglas/playbooks. El motor no
+qué conectores, qué tipos de evento/catástrofe (taxonomía), qué reglas/packs. El motor no
 se toca. Eso convierte esto en **producto** (se amortiza), no en integración a medida.
 
 ---
@@ -104,12 +114,17 @@ desviacion: +7.6σ, confianza: 0.87, t: 18:42}`. Sin IA generativa. Sin agentes.
 
 ### 2.2 Correlación (determinista, CEP) — **aquí vive «la fusión»**
 Un **motor de correlación de eventos complejos (CEP)** agrupa eventos por **espacio + tiempo
-+ entidad común** y dispara **incidentes candidatos**:
++ entidad común** y forma **detecciones**:
 > «ocupación +7.6σ **∧** flujo_metro +58 % en estación que alimenta la zona **∧** acústico
-> sostenido — misma zona, ventana de 20 min → **candidato: aglomeración**».
+> sostenido — misma zona, ventana de 20 min → **detección: aglomeración**».
 
 Es **reglas**, no LLM: rápido (miles de eventos/s), reproducible en *replay*, explicable ante
-un juez. Las «suscripciones» de un playbook son, literalmente, reglas de este motor.
+un juez. Las «suscripciones» de un pack son, literalmente, reglas de este motor.
+
+> Este documento decía originalmente «incidentes candidatos». El canon reserva «incidente»
+> para lo que nace de un acto humano de calificación, de modo que lo que la máquina forma aquí
+> es una **detección**, el peldaño de la escalera que va entre el evento y el incidente
+> (ADR-001, ADR-013). El renombrado no cambia el mecanismo.
 
 #### Los baselines: qué son y de dónde salen
 
@@ -132,26 +147,27 @@ hora, festivos):
 En la **PoC de València** (datos sintéticos) los baselines se fijan desde el «modo normal» del
 simulador o se *hardcodean*.
 
-### 2.3 Razonamiento (LLM) — **encima del candidato, por dominio**
-Solo cuando hay un candidato se **despierta un razonador especialista** (el que se haya
-suscrito a ese patrón). El especialista:
+### 2.3 Razonamiento (LLM) — **encima de la detección, por dominio**
+Solo cuando hay una detección se **despierta el razonador de dominio** (el que se haya
+suscrito a ese patrón). El razonador de dominio:
 - **genera y compite hipótesis** [concentración espontánea, evento autorizado, salida de
   espectáculo, flujo comercial],
 - **consulta discriminantes** (agenda de eventos, cartelera) para descartar,
 - **proyecta** (flujo neto → «75 % de aforo ~20:15»),
-- **emite una situación candidata** con confianza y **trazabilidad** (qué eventos y qué
-  conocimiento la sostienen).
+- **emite la detección** con confianza y **trazabilidad** (qué eventos y qué
+  conocimiento la sostienen). **[DIVERGENCIA 3]** — quién escribe el grado de confianza.
 
 Aquí es donde el LLM aporta: hipótesis y narrativa explicable. Lo determinista (disparadores,
 políticas) corre fuera del LLM.
 
 ### 2.4 ¿Y el «orquestador»? No es un LLM que correlaciona
 La coordinación es por **pizarra + bus**:
-- **Fusión de incidentes:** si dos especialistas emiten sobre lo mismo, un correlador agrupa
-  por espacio/tiempo/entidad → **un** incidente, no dos alertas fantasma.
-- **Director de incidente** (uno por incidente): recibe la situación candidata, decide el
+- **Fusión:** si dos razonadores de dominio emiten sobre lo mismo, un correlador agrupa
+  por espacio/tiempo/entidad → **uno**, no dos alertas fantasma. **[DIVERGENCIA 2]**
+- **Razonador de incidente** (uno por incidente): recibe la detección calificada, coordina el
   ciclo de vida y **propone misiones** (no razona sobre la plaza; razona sobre la operación).
-- **Coordinador** (uno por sala): arbitra entre incidentes y decide saliencia (qué se ve).
+- **Razonador de sala** (uno por sala): prepara el arbitraje entre incidentes y la saliencia
+  (qué se ve), que decide quien tiene el mando.
 
 Ninguno «absorbe datos crudos de entidades»: todos leen/escriben **estado estructurado**.
 
@@ -161,7 +177,7 @@ Ninguno «absorbe datos crudos de entidades»: todos leen/escriben **estado estr
 |---|---|
 | «sub-agentes IA razonan sobre cada entidad» | Analíticas **deterministas por fuente** (no IA, no por entidad) → eventos |
 | «absorbiendo datos propios de cada una» | Los datos de entidad viven en el **registro/estado**; los razonadores los **consultan**, no los ingieren en bruto |
-| «orquestador recibe alto nivel y correlaciona con playbooks» | La correlación es **CEP determinista**; el playbook aporta las **suscripciones** (disparadores) y la **doctrina** de hipótesis; el «orquestar» es pizarra+bus, no un agente monolítico |
+| «orquestador recibe alto nivel y correlaciona con playbooks» | La correlación es **CEP determinista**; el **pack** aporta las **suscripciones** (disparadores) y la **doctrina** de hipótesis; el «orquestar» es pizarra+bus, no un agente monolítico |
 
 ---
 
@@ -193,7 +209,15 @@ tecnología. En València puede correr sobre SQLite.»*
 
 ---
 
-## 4. Arquitectura de referencia: qué componentes implemento
+## 4. Arquitectura: qué componentes implemento
+
+> Nota de ámbito. ADR-035 retiró «arquitectura de referencia» como **nivel intermedio del
+> canon** —una capa apartable a medio camino entre norma y libertad— y dejó dos ámbitos: el
+> **motor cognitivo**, que es la norma íntegra, y la **construcción**, que es libertad de quien
+> construye con el banco de escenarios como juez único. Lo que sigue es, en esos términos,
+> **construcción**: es decir, terreno explícitamente libre. Que el canon retire ese nivel no
+> significa que aquí no haya arquitectura ni que haya que dejar de llamarla así; significa que
+> esta arquitectura no vincula a nadie salvo por lo que demuestre contra el banco.
 
 Inventario de componentes (un ingeniero puede repartir el trabajo por aquí):
 
@@ -209,7 +233,8 @@ Inventario de componentes (un ingeniero puede repartir el trabajo por aquí):
 - **Registro de esquema** (el modelo canónico).
 
 ### D · Estado (tres memorias distintas)
-- **Situación / pizarra** (estado actual, «caliente»): incidentes, hipótesis, objetos operativos.
+- **Pizarra** (estado actual, «caliente»): incidentes, hipótesis, objetos operativos. Es la pieza
+  de construcción que **materializa** el cuadro de situación del canon; no son lo mismo.
 - **Registro de identidades y relaciones** (Postgres): entidades, relaciones estables, procedencia.
 - **Series temporales** (histórico de sensores) con retención escalonada.
 - **Pasarela de federación**: consulta a sistemas de origen **bajo demanda**, con política + auditoría (no replicar el padrón).
@@ -221,7 +246,7 @@ registry*, no es una fila—. Lo que se reparte son las **instancias** que lo cu
 |---|---|---|
 | **Eventos** tipados | bus + almacén de eventos / series temporales | segundos (efímero en vuelo, durable en histórico) |
 | **Entidades + relaciones** (identidad) | **registro** de identidades y relaciones (Postgres) | meses (estable, curado) |
-| **Incidentes · hipótesis · objetos operativos** (el «ahora») | **situación / pizarra** | segundos–minutos |
+| **Incidentes · hipótesis · objetos operativos** (el «ahora») | **pizarra** | segundos–minutos |
 | **Valores pesados/sensibles** (padrón, combustible…) | **sistema de origen** (federación, puntero) | bajo demanda |
 
 Escala de decisión: **segundos → pizarra · meses → registro · bajo demanda → federado ·
@@ -240,7 +265,7 @@ pizarra y se despiertan por suscripción.
   de baja latencia) + **Kafka** (stream); la situación es estado **materializado** sobre el log
   de eventos; el registro de identidades/relaciones puede ser Postgres o un grafo.
 - **Propiedades:** durable (sobrevive a reinicios); **fuente única de verdad por incidente**
-  (el *director* es el único escritor del objeto incidente → sin conflictos de concurrencia);
+  (el *razonador de incidente* es el único escritor del objeto incidente → sin conflictos de concurrencia);
   **auditoría append-only** (cada escritura con quién/cuándo/por qué → trazabilidad); y es lo
   que permite que los razonadores sean **sin estado** (reconstruyen contexto leyendo de aquí).
   No es paso de mensajes en cadena: es **estado compartido + suscripciones**.
@@ -278,17 +303,17 @@ solo se **cachea con TTL** en la situación durante un incidente activo; el regi
 lo guarda.
 
 ### E · Correlación
-- **Motor CEP**: correlación espacio-tiempo-entidad → incidentes candidatos. Reglas = config.
+- **Motor CEP**: correlación espacio-tiempo-entidad → detecciones. Reglas = config.
   Motores tipo **Esper / Flink CEP / Drools Fusion** (o reglas llanas en la PoC).
-- **Fusión de incidentes**: dedup de situaciones candidatas de varios especialistas.
+- **Fusión**: dedup de detecciones de varios razonadores de dominio. **[DIVERGENCIA 2]**
 
 ### F · Razonadores (los «agentes») — servicios **sin estado**, cada uno = motor genérico + pack
-- **Especialista de dominio** (N, por dominio): suscripciones → hipótesis → discriminantes →
-  emisión. Respaldado por LLM. Ej.: `especialista_aglomeraciones`, `especialista_incendios`.
-- **Director de incidente** (1 por incidente): **máquina de estados** del ciclo de vida
-  (detección→calificación→respuesta→estabilización→cierre) + **plantillas de misión** (SOP) +
+- **Razonador de dominio** (N, por dominio): suscripciones → hipótesis → discriminantes →
+  emisión. Respaldado por LLM. Ej.: `razonador_aglomeraciones`, `razonador_incendios`.
+- **Razonador de incidente** (1 por incidente): **máquina de estados** del ciclo de vida
+  (calificación→respuesta→estabilización→cierre) + **plantillas de misión** (SOP) +
   política de interrupción. LLM para síntesis/narrativa; determinista para umbrales/ciclo.
-- **Coordinador de operaciones** (1 por **sala** = centro de mando / *control room*: p. ej. el
+- **Razonador de sala** (1 por **sala** = centro de mando / *control room*: p. ej. el
   **CISEM de Callao** en Madrid, el **112 de la Comunitat Valenciana**, un centro de **Dubai
   Police**). Arbitra entre **todos** los incidentes que compiten por los recursos de esa sala y
   gestiona la atención de sus operadores. Es el nivel **más genérico** de los tres: opera sobre
@@ -297,7 +322,7 @@ lo guarda.
   umbrales/criterios de mando. **Implementación:** funciones de *scoring* + reglas
   condición→acción (motor tipo **Drools**, o código llano en la PoC). **LLM: el peor candidato**
   aquí — las decisiones de recursos afectan a vidas y se quieren deterministas, auditables y
-  explicables; LLM solo para *narrar* la comparativa. Su *playbook* (doctrina de mando) es el
+  explicables; LLM solo para *narrar* la comparativa. Su *pack* (doctrina de sala) es el
   mismo artefacto lo ejecute un motor de reglas o un LLM. Nunca asigna de forma autónoma:
   genera comparativa y **escala al humano**.
 - **Capa de herramientas** que los razonadores invocan (*tool use*): `consultar_registro`,
@@ -311,12 +336,12 @@ lo guarda.
 > tokens. Por eso son *stateless*.
 
 ### G · Doctrina / configuración
-- **Repositorio de packs**: playbooks (especialista/director/coordinador), taxonomías,
+- **Repositorio de packs**: doctrina (de dominio, de incidente, de sala), taxonomías,
   baselines, **casos razonados** (ejemplares *few-shot*), políticas. **Versionado.**
 - **Banco de pruebas**: pares *escenario → comportamiento esperado*; simulación + *replay*.
 
 ### H · Presentación
-- **API de situación**: sirve objetos operativos con saliencia.
+- **API del cuadro de situación**: sirve objetos operativos con saliencia.
 - **Frontend** (panel *ultrawide*): mapa, timeline, workspace de incidente, feed de
   sugerencias con confianza.
 
@@ -330,13 +355,13 @@ lo guarda.
 ```
 fuente → conector → normalizador → EVENTO → bus
    └─(percepción ya emitió sus eventos)─┘
-bus → CEP correlaciona → INCIDENTE CANDIDATO en pizarra
-   → especialista (suscrito) despierta → consulta discriminantes (federación)
-   → emite SITUACIÓN CANDIDATA (confianza + trazas)
-   → fusión dedup → director abre INCIDENTE, propone misiones
-   → operador valida → coordinador arbitra entre incidentes / saliencia
+bus → CEP correlaciona → DETECCIÓN en la pizarra
+   → razonador de dominio (suscrito) despierta → consulta discriminantes (federación)
+   → enriquece la DETECCIÓN (hipótesis + confianza + trazas)
+   → fusión dedup → operador CALIFICA → nace el INCIDENTE → razonador de incidente propone misiones
+   → operador valida → razonador de sala prepara arbitraje entre incidentes / saliencia
    → API + panel renderizan
-   (cada paso escribe en situación + auditoría)
+   (cada paso escribe en la pizarra + auditoría)
 ```
 
 ---
@@ -350,17 +375,17 @@ Objetivo: el **mínimo de extremo a extremo** que demuestra la tesis, en semanas
 
 | # | Componente | Versión mínima | Mapea a |
 |---|-----------|----------------|---------|
-| 1 | **Simulador de fuentes** | Script/servicio que emite eventos sintéticos en una línea temporal con *slider* de fast-forward. Sustituye a conectores + percepción. | A + B |
+| 1 | **Simulador de fuentes** | Script/servicio que emite eventos sintéticos en una línea temporal con *slider* de fast-forward. Sustituye a conectores + percepción. **[DIVERGENCIA 4]** | A + B |
 | 2 | **Modelo de eventos mínimo** | 4–5 tipos de evento (`ocupacion_zona, flujo_salida_estacion, acustico_sostenido, convergencia_social`) + entidades (`Zona, Estacion, Incidente`) en SQLite/Postgres | C + D |
 | 3 | **Baselines + CEP** | Desviación vs baseline por zona/franja + un mini motor de reglas (código llano) que dispara candidato cuando N señales convergen en espacio+tiempo | E |
-| 4 | **Un especialista** (`pack aglomeraciones`) | Suscripción (el candidato) → hipótesis en competencia → discriminantes (contra tablas *fake* de agenda/cartelera) → proyección (flujo neto → t a 75 % aforo) → emisión con confianza + trazas. **Claude** para hipótesis/narrativa. | F |
+| 4 | **Un razonador de dominio** (`pack aglomeraciones`) | Suscripción (la detección) → hipótesis en competencia → discriminantes (contra tablas *fake* de agenda/cartelera) → proyección (flujo neto → t a 75 % aforo) → emisión con confianza + trazas. **Claude** para hipótesis/narrativa. | F |
 | 5 | **Estado** | Situación + incidente + hipótesis + auditoría en **SQLite/Postgres**. Demuestra «no hace falta grafo». | D |
-| 6 | **API + panel** | Panel *ultrawide* (estética IndraMind): mapa del centro, timeline de eventos, situación candidata con confianza y **por qué** (hipótesis descartadas), proyección | H |
-| 7 | *(Opcional)* **Director** | Abre incidente, propone 2–3 misiones desde plantilla; operador valida | F |
+| 6 | **API + panel** | Panel *ultrawide* (estética IndraMind): mapa del centro, timeline de eventos, detección con confianza y **por qué** (hipótesis descartadas), proyección | H |
+| 7 | *(Opcional)* **Razonador de incidente** | Tras la calificación humana, propone 2–3 misiones desde plantilla; el operador valida | F |
 | 8 | **Banco de escenarios** | El guion de València (del doc de tres niveles) corrido por el simulador; métricas de éxito | G |
 
 ### Qué NO construimos todavía
-Conectores reales, analítica de vídeo real, base de datos de grafos, coordinador/multi-incidente,
+Conectores reales, analítica de vídeo real, base de datos de grafos, razonador de sala / multi-incidente,
 LLM auto-hospedado, multi-tenant. Todo eso es «después».
 
 ### Stack sugerido para la PoC (rápido y Claude-driven)
@@ -376,4 +401,4 @@ LLM auto-hospedado, multi-tenant. Todo eso es «después».
 - **Antelación ≥ 20 min** sobre la detección humana de referencia.
 - **Falsos positivos < umbral** pactado (p. ej. con una mascletà en agenda, NO alerta).
 - **100 % de trazabilidad**: toda conclusión enlazada a eventos + conocimiento + política.
-- **De señal a propuesta < 60 s** (si añadimos director).
+- **De señal a propuesta < 60 s** (si añadimos el razonador de incidente) — hoy PRE-02 del canon.
