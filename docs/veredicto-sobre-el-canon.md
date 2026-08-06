@@ -1,8 +1,10 @@
 # Veredicto sobre el canon
 
-> **Para José · 5-ago-2026** · Respuesta a lo que pediste el 31-jul: «que me digas: ok, la veo
-> bien y puede usarse como referencia, o esto no lo veo, o esto hay que cambiarlo antes de que
-> se lo des a los del otro lado». Van los tres cajones, en ese orden.
+> **Para José · 6-ago-2026** · Respuesta a las dos cosas que pediste el 31-jul. Primero el
+> veredicto: «que me digas: ok, la veo bien y puede usarse como referencia, o esto no lo veo, o
+> esto hay que cambiarlo antes de que se lo des a los del otro lado» — van los tres cajones, en
+> ese orden. Y después el reparto con Alex, sobre lo que dijiste que no habías llegado a pensar
+> todavía.
 >
 > Revisado: canon `indramind-poc` en `1a69d09` (4-ago) — requisitos v0.5.1, ADR-001..048,
 > POC-001..005, banco REQ-01..61, `/banco` recién creado. El detalle de cada punto está en
@@ -115,8 +117,62 @@ aparece ni una vez en los 48 ADR ni en el maestro. Entraría como nota de análi
 
 ---
 
-### En una frase
+### El veredicto en una frase
 
 El canon está bien y puede usarse como referencia; lo que hay que arreglar no es lo que dice,
 sino **a quién se le da y en qué formato**, y falta la pieza que lo convierte en juez — el banco
 ejecutable.
+
+---
+
+# Reparto propuesto con Alex
+
+Dijiste el 31-jul que tenía que ser algo colaborativo y que no habías llegado a pensar cómo. Va
+una propuesta, con el razonamiento delante para que puedas discutirla por partes.
+
+## El principio: juez y juzgado no pueden ser el mismo
+
+Si yo construyo el motor **y** el arnés que lo juzga, me estoy escribiendo el examen. Ese es el
+único argumento con el que Paradigma puede desacreditar el resultado sin entrar en el fondo, y es
+gratis de usar. Conviene cerrarlo desde el principio y no cuando ya moleste.
+
+Hay además una frase tuya que impone una condición al reparto: «tenemos que, el día que haya que
+comparar, decir: no, no, **esto es una cosa que hemos hecho a ratos**». Para que eso sea verdad,
+Alex tiene que haber construido algo. Un papel de solo revisar documentos no sostiene esa frase, y
+sostenerla en falso es peor que no tenerla — se desmonta con dos preguntas.
+
+## Dónde poner la frontera
+
+La credibilidad no viene de quién escribió el arnés: el arnés es determinista y cualquiera puede
+inspeccionarlo. Viene de **quién definió qué cuenta como fallo y quién firma el resultado**. El
+arnés es la regla de medir; las ablaciones son el examen. Da igual quién fabricó la regla si está
+calibrada; importa mucho quién escribe el examen y quién corrige.
+
+| Pieza | Quién | Por qué |
+|---|---|---|
+| **El arnés** — esquema de instancia, reloj de tiempo de evento, motor de aserciones, `check_banco` con integridad referencial contra los tres catálogos (ADR-047) | **Yo** | Es infraestructura en camino crítico: tu hoja de ruta dice que `/src` no arranca hasta que el banco valide en simulación. No puede depender de una semana de ofertas |
+| **Las ablaciones** — los perfiles P0–P3, las suites, y **correrlas** | **Alex** | Es donde vive el juicio, es lo que se apunta a Paradigma, y es él quien tendrá que defender ante los suyos que los perfiles son justos. Cae además en fase 4, semanas 3-4 |
+| **El veredicto de cada entrega** — declarar verde o rojo | **Alex** | Yo construyo el instrumento; él lo lee y firma |
+| **Segundo lector de las filas del banco**, y filtro de salida: nada va a Paradigma sin que lo haya leído | **Alex** | El encargo no es «¿está bien?» sino «**¿podrás defender esta fila dentro de Paradigma?**». Cada fila que no pase ese filtro explota después. Y el filtro de salida es lo que hace cierto que esto no llega de la nada |
+| **Los segmentos sintéticos y el render de la demo** (A y C de tu hoja de ruta) | **Yo**, con Claude | En la iteración 1. Si aparece un tercero, entra por aquí |
+
+## Un criterio general, que vale más que este reparto concreto
+
+A Alex conviene darle **decisiones y revisiones con fecha, no código en el camino crítico.** Lo
+primero sobrevive a una semana de ofertas; lo segundo bloquea a todo el mundo.
+
+## Dos cosas que hay que cerrar para que esto funcione
+
+**El punto de acoplamiento**, que ya tienes resuelto en la hoja de ruta y solo hay que pactar en
+voz alta: «el esquema de eventos es el único artefacto que tocan los tres — lo custodia B y solo
+cambia con versión y aviso». Con eso dicho, Alex y yo trabajamos en paralelo sin bloquearnos.
+
+**Cuántas horas puede poner Alex de verdad.** Dijiste que yo tendría más tiempo que él, pero sin
+número. De eso depende si las ablaciones son suyas de principio a fin o si él escribe los perfiles
+y las corro yo — que sigue separando juez de juzgado, aunque más justito.
+
+## Cadencia
+
+El ratito diario que pediste cuando estés, más un punto semanal de media hora los tres **contra el
+estado del banco**. Tener el banco como orden del día es lo que evita que la reunión se convierta
+en intercambio de opiniones.
