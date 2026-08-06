@@ -1,8 +1,115 @@
-# Chuleta de identificadores del canon
+# Chuleta del canon: estructura e identificadores
 
 > **Para la conversación con José · 6-ago-2026** · Contra el canon en `1a69d09` (requisitos
-> v0.5.1, ADR-048). No es un resumen del canon: es lo justo para citar bien y no quedarse en
-> blanco. Lo que hay que leer de verdad es [`veredicto-sobre-el-canon.md`](veredicto-sobre-el-canon.md).
+> v0.5.1, ADR-048). No es un resumen del canon: es lo justo para orientarse, citar bien y no
+> quedarse en blanco. Lo que hay que leer de verdad es
+> [`veredicto-sobre-el-canon.md`](veredicto-sobre-el-canon.md).
+
+# Parte 1 · Cómo está organizada su documentación
+
+## El principio que lo ordena
+
+Está escrito en la cabecera de su índice y explica todo lo demás:
+
+> «Una fuente de verdad por tema, y al versionar se **sustituye, no se acumula**. Las
+> conversaciones son desechables; **el canon vive en ficheros**.»
+
+De ahí sale que los ADR no se editen **nunca**: si una decisión cambia, se escribe un ADR nuevo
+que supersede al anterior. El registro es historia, no estado.
+
+## Los tres estados de un documento
+
+| Estado | Qué significa | Dónde |
+|---|---|---|
+| **Canónico** | **Manda**, y genera obligaciones de propagación al versionarse | `docs/`, y solo los seis de la tabla de abajo |
+| **Apoyo** | Vigente e informativo: **se cita, no se obedece**. Notas de análisis y actas | `docs/apoyo/` |
+| **Archivo** | Retirado. **No se cita como fuente** y no se le aplican pasadas terminológicas | `archivo/` |
+
+Esa distinción es la que hay que tener presente: la mayor parte del volumen del repo —el corpus de
+contraste, los planes territoriales, la visita al CECOES— es **apoyo**. Impresiona por cantidad,
+pero no manda.
+
+## Los seis artefactos canónicos
+
+Solo estos generan obligación de propagación. Todo lo demás, por voluminoso que sea, no.
+
+| Fichero | Es la fuente de verdad de | Estado |
+|---|---|---|
+| `requisitos-motor-cognitivo.md` | Lo que el motor debe hacer y garantizar: capacidades, invariantes, configurabilidad, presupuestos, anti-requisitos, y el banco REQ-01..61 como contrato de aceptación | **v0.5.1** |
+| `decisiones.md` | El registro ADR: toda decisión firme de producto | vivo, ADR-001..048 |
+| `decisiones-poc.md` | Las decisiones propias de la PoC | vivo, POC-001..005 |
+| `indice-del-canon.md` | **El inventario**: la única lista válida de documentos y versiones, más la matriz de propagación | vivo, v3.28 |
+| `consultoria-cognitiva-metodo-implantacion.md` | El método de implantación: superficies configurables, fases, talleres | v0.2 |
+| `hoja-de-ruta.md` | El plan: crónica, fases con puertas, hitos H1–H4, equipo, deuda documental | vivo |
+
+`CLAUDE.md` está **fuera** del grafo de propagación a propósito: no contiene versiones ni
+inventario, y así no hay que actualizarlo cuando algo sube de versión.
+
+## Las carpetas
+
+| Carpeta | Qué hay | Estado hoy |
+|---|---|---|
+| `docs/` | El canon vigente, todo Markdown (ADR-014) | ✅ |
+| `docs/apoyo/` | Notas de análisis y actas. Sin obligación de propagación | ✅ voluminoso |
+| `banco/` | Los escenarios de aceptación, YAML, uno por fichero | ⚠️ **solo el README y 3 borradores** |
+| `packs/` | La doctrina en YAML, por razonador | ❌ no existe |
+| `sim/` | Fuentes simuladas: segmentos por fuente, más trazas de las sesiones de roleplay | ❌ no existe |
+| `demo/` | La capa de demostración y el argumento. **No es contrato**: el contrato es el banco | parcial |
+| `src/` | El código. **Solo se empieza cuando banco y packs estén validados en simulación** | ❌ no existe |
+| `tools/` | `check_canon.js` (coherencia del canon) y `publicar.sh` | ✅ |
+| `archivo/` | Versiones sustituidas e histórico. Nada vigente | ✅ |
+| `visuales/` | 21 visuales en HTML+PDF. **Fuera de la matriz de propagación a propósito** | ✅ nuevo |
+
+## Los itinerarios de lectura que él mismo define
+
+Esto es lo más útil de todo, porque **José ya ha resuelto el problema de por dónde entrar** y lo
+tiene escrito en el índice. Son cuatro rutas:
+
+| Si quieres… | Lee, en este orden |
+|---|---|
+| **Entender el producto** | `apoyo/fundamentos-del-motor-cognitivo.md` (los porqués) → `apoyo/motor-cognitivo-explicado.md` (el sistema completo, componente a componente) → `apoyo/ejemplos-del-motor-cognitivo.md` (sobre casos) |
+| **Contar qué vamos a hacer y por qué** (el recap a dirección) | `demo/argumento-demo-direccion.md`, y `hoja-de-ruta.md` para el plan y el equipo |
+| **Construir, o entender cómo se construye** | `CLAUDE.md`, el índice, el `README` de `/banco`, y la sección «El viaje de un escenario» de los fundamentos |
+| **Saber por qué algo es como es, o cuándo pasó** | `decisiones.md`, `decisiones-poc.md` y la crónica de `hoja-de-ruta.md` |
+
+**Corrige lo que te dije antes**: si algún día quieres entrar el canon de verdad, no son 48 ADR —
+son **tres documentos** por la primera ruta. Para mañana sigue bastando el veredicto; pero la ruta
+existe y es suya, lo que la hace además una buena cosa que mencionar.
+
+## Las reglas de gobierno que conviene conocer
+
+Son las de su `CLAUDE.md`, y varias te sirven como argumento:
+
+1. **Los ADR no se editan nunca.** Si una decisión cambia, ADR nuevo que supersede.
+2. **Ningún hallazgo o capacidad entra al diseño sin su escenario en `/banco`.** Esta es la que
+   convierte al banco en puerta y no en adorno — y la que hace que nuestra aportación sobre
+   identidades tenga que llegar con su borrador de escenario.
+3. **Antes de aceptar una propuesta, contrástala con los invariantes y los anti-requisitos.**
+4. **Trabaja siempre con hipótesis en competencia**; si un diseño solo contempla una opción, pide
+   las alternativas. (Es la razón de que sus ADR lleven sección de descartados.)
+5. **Matriz de propagación:** la sesión que versiona aplica su fila en el mismo cambio; lo que no
+   pueda propagarse se deja escrito como **CONSULTA**, nunca se resuelve en silencio.
+6. **`node tools/check_canon.js`** antes de cerrar cualquier sesión que toque `docs/`.
+7. **Una sesión, un commit** — y el push lo hace José, porque las credenciales son suyas.
+8. **Pasarela de graduación:** lo que se descubre en la PoC vive en `decisiones-poc.md` y solo se
+   convierte en norma por un ADR expreso que cite el POC de origen. La PoC transfiere demostración,
+   **no jurisdicción** (ADR-035, 5).
+
+## Vocabulario no negociable (su `CLAUDE.md`)
+
+- **La escalera de objetos:** evento → **detección** → incidente (con hilos) → operación → sala.
+- **«Situación» está reservada:** significa cuadro de situación o Situación Operativa (0-3), y
+  nada más. **«Alarma»** es término heredado del mundo PSIM: se modela como evento **sin
+  privilegio de atención**.
+- Los componentes máquina se anclan a **objetos, nunca a personas**, y no guardan estado entre
+  invocaciones.
+- **El principio que lo ordena todo: la máquina prepara y propone; la persona decide.**
+- **Alias en desuso**, no usar en texto nuevo: «el bosque» → los fundamentos del motor cognitivo;
+  «la arquitectura contada» → el motor cognitivo explicado.
+
+---
+
+# Parte 2 · Los identificadores
 
 ## Las familias
 
