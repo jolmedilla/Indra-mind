@@ -1,10 +1,13 @@
 # Veredicto sobre el canon
 
-> **Para José · 6-ago-2026** · Respuesta a las dos cosas que pediste el 31-jul. Primero el
-> veredicto: «que me digas: ok, la veo bien y puede usarse como referencia, o esto no lo veo, o
-> esto hay que cambiarlo antes de que se lo des a los del otro lado» — van los tres cajones, en
-> ese orden. Y después el reparto con Alex, sobre lo que dijiste que no habías llegado a pensar
-> todavía.
+> **Para José · 6-ago-2026** · Tres partes, que responden a las tres cosas que has pedido.
+>
+> **1. El veredicto** sobre el canon: «que me digas: ok, la veo bien y puede usarse como
+> referencia, o esto no lo veo, o esto hay que cambiarlo antes de que se lo des a los del otro
+> lado» (31-jul) — van los tres cajones, en ese orden.
+> **2. El alcance al que me comprometo**, con número de hito: «¿tú te comprometes a hacer esto de
+> aquí a septiembre?» (29-jul).
+> **3. El reparto con Alex**, sobre lo que dijiste que no habías llegado a pensar todavía.
 >
 > Revisado: canon `indramind-poc` en `1a69d09` (4-ago) — requisitos v0.5.1, ADR-001..048,
 > POC-001..005, banco REQ-01..61, `/banco` recién creado. El detalle de cada punto está en
@@ -122,6 +125,81 @@ aparece ni una vez en los 48 ADR ni en el maestro. Entraría como nota de análi
 El canon está bien y puede usarse como referencia; lo que hay que arreglar no es lo que dice,
 sino **a quién se le da y en qué formato**, y falta la pieza que lo convierte en juez — el banco
 ejecutable.
+
+---
+
+# Alcance al que me comprometo
+
+Me preguntaste el 29-jul si me comprometía a esto de aquí a septiembre. Sí, y va con número de
+hito para que el compromiso signifique algo.
+
+## Me anclo a tu propio mecanismo
+
+> «**Los hitos son el seguro de la fecha:** si el mes acaba en H2, se demuestra un H2 coherente;
+> el núcleo vinculante de POC-001 no se recorta — la demo se ancla a hitos, no al núcleo
+> completo.»
+
+Eso está bien pensado y es lo que hace que esto no tenga que ser una apuesta. Así que no digo
+«haré la PoC»: digo **H1 en verde con sus ablaciones, y H2 hasta donde llegue.**
+
+Y conviene notar que tu H1 y lo que nosotros habíamos puesto como criterios de éxito en julio son
+la misma cosa. Tú lo describes como «detección anticipada, espejo de mascletà»; nosotros
+escribimos antelación ≥ 20 min y «con una mascletà en agenda, NO alerta». Son REQ-01 y REQ-02.
+Llegamos al mismo sitio por separado, que es la mejor señal de que es el sitio correcto.
+
+## La rebanada
+
+Lo que ya estaba descrito en [`arquitectura-detallada.md`](arquitectura-detallada.md) §5, sin
+cambios: simulador de fuentes, 4-5 tipos de evento, baselines y correlación en código llano, **un**
+razonador de dominio (pack de aglomeraciones), estado en SQLite, y un panel que reutiliza la
+estética que ya existe. Backend FastAPI, bus una cola en proceso, razonador contra la API de
+Claude. Sin tecnología pesada — que es parte del mensaje: **la arquitectura depende de funciones,
+no de un clúster ni de un producto de grafos.**
+
+## Lo importante: instrumentar para ablación, no para cobertura
+
+Aquí está lo que hace esto viable en el tiempo que tengo, y es una decisión de ingeniería que
+merece discutirse.
+
+El 29-jul hablabas de «siete, diez, quince escenarios» de ablación. Pero el poder discriminante no
+está repartido por igual: está concentrado en muy pocas filas. **Dos filas y dos perfiles dan el
+argumento completo:**
+
+| | **P0** · umbrales simples | **P1** · con razonador de dominio |
+|---|---|---|
+| **REQ-01** — convergencia de fuentes independientes, sin evento en agenda | detecta tarde, o no detecta | detecta ≥ 20 min antes de la referencia humana |
+| **REQ-02** — la misma convergencia, pero con una mascletà en la agenda | **salta: falsa alarma** | no interrumpe; registra «evento esperado» con la alternativa descartada y su motivo |
+
+Cuatro ejecuciones, y prueban las dos mitades a la vez: que la pieza hace falta, y que sin ella el
+sistema o es ciego o es un histérico. Eso es literalmente «le quito una pieza al coche y el coche
+no cumple», y es lo que convierte una demo en un argumento.
+
+**Distinción que conviene mantener**, porque son dos cosas y se confunden:
+
+- **El núcleo** —las filas que tienen que correr en verde en el perfil completo— lo defines tú
+  escenario a escenario, que es la puerta de tu fase 1. Puede ser bastante más que dos.
+- **La instrumentación de ablación** se concentra en esas dos. Ablacionar todo cuesta caro y no
+  añade fuerza al argumento: multiplica ejecuciones sin multiplicar evidencia.
+
+## Qué queda fuera, dicho ahora y no en septiembre
+
+**H3** (sala completa: fusiones, sectorización, arbitraje) y **H4** (capa de demo completa,
+videowall, consola del presentador, ensayo general). Y la **ciudad de referencia** de ADR-046 con
+todos los packs de fábrica activos a la vez: eso es banco de producto, no de PoC — la semilla de
+València germina hacia ahí, no nace ahí.
+
+Sobre el reparto de mi dedicación, para que el compromiso sea creíble y no un número al aire: de
+las ~38 horas del periodo, unas 5 van a seguimiento, ~8 al arnés del banco y `check_banco`, ~6 al
+entregable derivado y a la nota de retención y purga, y **quedan ~19 para construir**. Con Claude,
+19 horas dan H1 sólido con sus ablaciones y H2 empezado — el razonador de incidente proponiendo
+misiones, probablemente sin replanificación.
+
+## Y esto ya te cierra la puerta que quieres cerrar
+
+No hace falta llegar a H3 para poder decir lo que querías decir. Con H1 en verde y las cuatro
+ejecuciones de ablación delante, ya tienes: «no me digas que no se puede, porque aquí lo tienes
+funcionando; ahora, si lo quieres hacer de otra manera, **igualámelo contra esto**». El benchmark
+existe desde el primer hito, y crece después.
 
 ---
 
