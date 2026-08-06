@@ -292,11 +292,12 @@ El mecanismo concreto de resolución de identidades de
 [`arquitectura-detallada.md`](arquitectura-detallada.md) §4.D es más fino que nada que exista
 hoy en el canon. En concreto:
 
-- Los **dos identificadores con trabajos distintos**: un `match_key`, hash con sal de una clave
-  fuerte, que sirve para **enlazar** y es irreversible —cuando llega una clave nueva se
-  re-hashea y se compara, sin guardar nunca la clave en claro—; y un `handle` por fuente, que
-  sirve para **recuperar** vía consulta federada («dame el registro 4471 de la DGT», no «dame a
-  la persona con DNI X»).
+- Los **dos identificadores con trabajos distintos**: un `match_key`, **HMAC con clave custodiada
+  fuera de la base de datos** —corregido el 6-ago-2026; decía «hash con sal», que no aguanta porque
+  la sal no es secreta y un DNI son ~10⁸ candidatos—, que sirve para **enlazar** recalculándolo y
+  comparándolo, sin guardar nunca la clave en claro; y un `handle` por fuente, que sirve para
+  **recuperar** vía consulta federada («dame el registro 4471 de la DGT», no «dame a la persona con
+  DNI X»).
 - La **excepción tokenizada** para las fuentes que solo admiten consulta por la clave sensible:
   token en el registro y mapeo token↔clave en una bóveda separada, protegida y auditada.
 - La distinción **seudonimización frente a anonimización**: un identificador sintético que sigue
