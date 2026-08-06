@@ -81,7 +81,9 @@ Por orden de importancia.
 **a) Separar el entregable del canon.** Lo que va a Paradigma es: el **banco** (las 61 filas, que
 son el contrato), los **invariantes**, y la **frontera de dos ámbitos**. Nada más. Los 50 ADR son
 el *porqué*, y se ofrecen a demanda: «¿por qué esto es así? mira ADR-nn». Así el paquete es
-corto, verificable y no parece un intento de diseñarles el sistema.
+corto, verificable y no parece un intento de diseñarles el sistema. **El índice completo está en
+[`indice-entregable-paradigma.md`](indice-entregable-paradigma.md)**: unas 30 páginas, de las que 12
+son el banco, y casi todo copiado del maestro. Lo llevo para que se vea el tamaño y lo decidas.
 
 **b) Cerrar el banco ejecutable — es el camino crítico.** Las 61 filas normativas existen;
 `banco/instancias/` y `banco/suites/` están **vacías**, y la fase 1 sigue sin registrarse: el
