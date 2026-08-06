@@ -9,8 +9,9 @@
 > aquí a septiembre?» (29-jul).
 > **3. El reparto con Alex**, sobre lo que dijiste que no habías llegado a pensar todavía.
 >
-> Revisado: canon `indramind-poc` en `1a69d09` (4-ago) — requisitos v0.5.1, ADR-001..048,
-> POC-001..005, banco REQ-01..61, `/banco` recién creado. El detalle de cada punto está en
+> Revisado: canon `indramind-poc` en **`29b3d47`** (5-ago) — requisitos v0.5.1,
+> **ADR-001..050**, POC-001..005, banco REQ-01..61, `/banco` recién creado y la bandeja
+> `/propuestas` estrenada. El detalle de cada punto está en
 > [`divergencias-con-el-canon.md`](divergencias-con-el-canon.md).
 
 ## 1 · La veo bien, y puede usarse como referencia
@@ -65,7 +66,7 @@ atado por el banco. Entra a la reunión con esto y no con «son requisitos, punt
 incomoda decirte y por lo que me pediste que lo mirara. Está escrito para un lector —tú, con
 Claude recuperando por identificador— y funciona muy bien para eso. Pero el lector del otro lado
 es distinto y no es amistoso: párrafos únicos de cuatrocientas palabras con quince referencias
-cruzadas, 48 ADR, 61 filas, un corpus de 36 fuentes y 21 visuales, producidos en tres semanas.
+cruzadas, 50 ADR, 61 filas, un corpus de 36 fuentes y 21 visuales, producidos en tres semanas.
 Un ingeniero de Paradigma que abra eso tiene dos salidas fáciles, y las dos te perjudican: «esto
 no hay quien lo lea» y «esto lo ha escrito una IA». La densidad que a ti te da precisión, a ellos
 les da munición.
@@ -78,21 +79,23 @@ un entregable distinto, que es el punto 3.a. Los visuales sugieren que ya lo est
 Por orden de importancia.
 
 **a) Separar el entregable del canon.** Lo que va a Paradigma es: el **banco** (las 61 filas, que
-son el contrato), los **invariantes**, y la **frontera de dos ámbitos**. Nada más. Los 48 ADR son
+son el contrato), los **invariantes**, y la **frontera de dos ámbitos**. Nada más. Los 50 ADR son
 el *porqué*, y se ofrecen a demanda: «¿por qué esto es así? mira ADR-nn». Así el paquete es
 corto, verificable y no parece un intento de diseñarles el sistema.
 
 **b) Cerrar el banco ejecutable — es el camino crítico.** Las 61 filas normativas existen;
 `banco/instancias/` y `banco/suites/` están **vacías**, y la fase 1 sigue sin registrarse: el
 contador de decisiones de PoC está en POC-005 y el POC-006 que tu hoja de ruta anuncia todavía no
-existe. Sin instancias no hay juez, y sin juez
-toda la estrategia se cae: no puedes darles las mismas reglas a los dos lados si las reglas no se
-pueden ejecutar. Tu propia hoja de ruta dice que `/src` no arranca hasta que banco y packs estén
-validados en simulación. El `README` del banco declara pendiente justo lo que lo desbloquea —el
-esquema concreto de instancia y el validador `check_banco`— y lo declara **decisión de
-construcción**, que por ADR-035 es mi terreno. **Me ofrezco a eso**: el formato ejecutable y el
-validador son míos; el contenido de los escenarios sigue siendo tuyo y los revisas uno a uno,
-que es tu puerta de fase.
+existe. Sin instancias no hay juez, y sin juez toda la estrategia se cae: no puedes darles las
+mismas reglas a los dos lados si las reglas no se pueden ejecutar. Tu propia hoja de ruta dice que
+`/src` no arranca hasta que banco y packs estén validados en simulación.
+
+Lo que lo desbloquea son dos cosas, y el `README` del banco las declara pendientes: el **esquema
+concreto de instancia** y el validador **`check_banco`**. El esquema es lo urgente y **lo ratificas
+tú** —ADR-050 pone en tu plano el banco y **sus instancias**—; debería entrar por la bandeja esta
+semana, porque es el primer artefacto que Alex y yo compartimos y hasta que no exista ninguno de los
+dos puede escribir nada sin riesgo de tirarlo. El contenido de los escenarios sigue siendo tuyo y
+los revisas uno a uno, que es tu puerta de fase. Quién escribe el validador va en la parte 3.
 
 **c) Blindar ADR-048 con una fila de banco.** Es la única puerta del canon por la que una salida
 del modelo llega al grado de confianza —acotada, determinista y con techo, pero existe—. El
@@ -114,9 +117,10 @@ sin resolver. «No habéis resuelto el RGPD» es la objeción más barata que te
 tiene**: el mecanismo de resolución de identidades de nuestra arquitectura detallada —los dos
 identificadores con trabajos distintos (`match_key` irreversible para enlazar, `handle` por
 fuente para recuperar), la excepción tokenizada con bóveda separada, y la distinción entre
-seudonimizar y anonimizar—. Lo he verificado contra el canon del 4-ago: ninguno de esos términos
-aparece ni una vez en los 48 ADR ni en el maestro. Entraría como nota de análisis en
-`docs/apoyo/`, con su borrador de escenario, por el ciclo normal.
+seudonimizar y anonimizar—. Lo he verificado: ninguno de esos términos aparece ni una vez en los
+50 ADR ni en el maestro. Y ahora tiene por dónde entrar: **como propuesta en la bandeja**, con su
+borrador de escenario. La creo sin pedir permiso, porque una propuesta es inerte, y el veredicto es
+tuyo porque es materia funcional (ADR-050).
 
 ---
 
@@ -206,51 +210,102 @@ existe desde el primer hito, y crece después.
 # Reparto propuesto con Alex
 
 Dijiste el 31-jul que tenía que ser algo colaborativo y que no habías llegado a pensar cómo. Va
-una propuesta, con el razonamiento delante para que puedas discutirla por partes.
+una propuesta.
 
-## El principio: juez y juzgado no pueden ser el mismo
+**Escrita después de leer ADR-049 y ADR-050**, del 5 de agosto, que cambian el punto de partida: ya
+existe una bandeja de propuestas y una frontera de ratificación por materia. La propuesta se apoya
+en ese mecanismo en lugar de proponer otro.
 
-Si yo construyo el motor **y** el arnés que lo juzga, me estoy escribiendo el examen. Ese es el
-único argumento con el que Paradigma puede desacreditar el resultado sin entrar en el fondo, y es
-gratis de usar. Conviene cerrarlo desde el principio y no cuando ya moleste.
+## Lo primero: hay dos asientos esperando tu confirmación
 
-Hay además una frase tuya que impone una condición al reparto: «tenemos que, el día que haya que
-comparar, decir: no, no, **esto es una cosa que hemos hecho a ratos**». Para que eso sea verdad,
-Alex tiene que haber construido algo. Un papel de solo revisar documentos no sostiene esa frase, y
-sostenerla en falso es peor que no tenerla — se desmonta con dos preguntas.
+ADR-049 y ADR-050 dicen los dos, con esas palabras, que tu confirmación expresa está **pendiente**,
+y te reservan la potestad de «confirmar, matizar o revocar» la frontera del punto 7. Conviene que lo
+resuelvas mañana y no que se quede en pendiente, porque **el mecanismo ya está operando**:
+`check_canon.js` avisa desde ahora si un fichero de `/docs` cambia sin una propuesta aceptada que lo
+declare. Lo digo sin más carga que ésa — el mecanismo me parece bien y me viene bien, como explico
+abajo.
 
-## Dónde poner la frontera
+## El principio que sigue en pie: juez y juzgado no pueden ser el mismo
 
-La credibilidad no viene de quién escribió el arnés: el arnés es determinista y cualquiera puede
-inspeccionarlo. Viene de **quién definió qué cuenta como fallo y quién firma el resultado**. El
-arnés es la regla de medir; las ablaciones son el examen. Da igual quién fabricó la regla si está
-calibrada; importa mucho quién escribe el examen y quién corrige.
+Si yo construyo el motor **y** el arnés que lo juzga, me estoy escribiendo el examen. Es el único
+argumento con el que Paradigma puede desacreditar el resultado sin entrar en el fondo, y es gratis
+de usar.
+
+Y hay una frase tuya que impone una condición: «tenemos que, el día que haya que comparar, decir:
+no, no, **esto es una cosa que hemos hecho a ratos**». Para que eso sea verdad, Alex tiene que haber
+construido algo. Un papel de solo revisar no la sostiene.
+
+## Lo que había pensado, y por qué lo he cambiado
+
+Mi primera versión daba el arnés a mí y las ablaciones a Alex, con el argumento de que él tendría
+menos tiempo. **Ese argumento ya no vale.** En dos días Alex ha producido el catálogo de 21 visuales,
+la bandeja entera con su README, y dos ADR. No es alguien con horas fragmentadas: es alguien que va
+rápido y va con Claude.
+
+Con eso sobre la mesa, la separación limpia es la que menos me favorece a mí, y es la que propongo:
 
 | Pieza | Quién | Por qué |
 |---|---|---|
-| **El arnés** — esquema de instancia, reloj de tiempo de evento, motor de aserciones, `check_banco` con integridad referencial contra los tres catálogos (ADR-047) | **Yo** | Es infraestructura en camino crítico: tu hoja de ruta dice que `/src` no arranca hasta que el banco valide en simulación. No puede depender de una semana de ofertas |
-| **Las ablaciones** — los perfiles P0–P3, las suites, y **correrlas** | **Alex** | Es donde vive el juicio, es lo que se apunta a Paradigma, y es él quien tendrá que defender ante los suyos que los perfiles son justos. Cae además en fase 4, semanas 3-4 |
-| **El veredicto de cada entrega** — declarar verde o rojo | **Alex** | Yo construyo el instrumento; él lo lee y firma |
-| **Segundo lector de las filas del banco**, y filtro de salida: nada va a Paradigma sin que lo haya leído | **Alex** | El encargo no es «¿está bien?» sino «**¿podrás defender esta fila dentro de Paradigma?**». Cada fila que no pase ese filtro explota después. Y el filtro de salida es lo que hace cierto que esto no llega de la nada |
-| **Los segmentos sintéticos y el render de la demo** (A y C de tu hoja de ruta) | **Yo**, con Claude | En la iteración 1. Si aparece un tercero, entra por aquí |
+| **El motor** — percepción, correlación, razonadores, el runner: `/src` | **Yo** | Es el volumen de trabajo y lo que demuestra la tesis. Y es lo que me pedisteis |
+| **El arnés y las ablaciones** — esquema de instancia instrumentado, perfiles P0–P3, suites, y **correrlas** | **Alex** | Separa juez de juzgado del todo. `/tools` ya es su plano por ADR-050, va rápido, y es él quien tendrá que defender ante los suyos que los perfiles son justos |
+| **El veredicto de cada entrega** — verde o rojo | **Alex** | Yo construyo lo que se mide; él mide y firma |
+| **Segundo lector de las filas del banco: ¿es construible?** | **Yo** | El espejo de su lectura. Él lee «¿podré defender esta fila dentro de Paradigma?»; yo leo «¿se puede construir esta fila y con qué coste?» |
+| **Los segmentos sintéticos y el render de la demo** | **Yo**, con Claude | En la iteración 1 |
 
-## Un criterio general, que vale más que este reparto concreto
+Me quedo con la parte más interesante y él con la más incómoda de discutir, así que si prefiere lo
+contrario, se cambia sin problema. Lo que no debería cambiar es que **no sean la misma persona**.
 
-A Alex conviene darle **decisiones y revisiones con fecha, no código en el camino crítico.** Lo
-primero sobrevive a una semana de ofertas; lo segundo bloquea a todo el mundo.
+## Una costura entre las dos fronteras, que conviene nombrar
 
-## Dos cosas que hay que cerrar para que esto funcione
+ADR-035 y ADR-050 trazan fronteras en ejes distintos y se cruzan justo donde está el arnés:
 
-**El punto de acoplamiento**, que ya tienes resuelto en la hoja de ruta y solo hay que pactar en
-voz alta: «el esquema de eventos es el único artefacto que tocan los tres — lo custodia B y solo
-cambia con versión y aviso». Con eso dicho, Alex y yo trabajamos en paralelo sin bloquearnos.
+- **ADR-035** da la **construcción** —tecnologías, estructura interna, topología— a quien construye,
+  con el banco como juez único.
+- **ADR-050** da el **método y el espacio documental** —estructura de carpetas, convenciones de
+  nombres, `/tools`— al responsable de método.
 
-**Cuántas horas puede poner Alex de verdad.** Dijiste que yo tendría más tiempo que él, pero sin
-número. De eso depende si las ablaciones son suyas de principio a fin o si él escribe los perfiles
-y las corro yo — que sigue separando juez de juzgado, aunque más justito.
+El arnés es a la vez una herramienta de `/tools` y una pieza de construcción. Propongo resolverlo
+por lo que sirve cada cosa, sin que nadie ceda nada:
+
+- **El esquema de instancia lo ratificas tú.** ADR-050 pone en tu plano «el banco como contrato de
+  aceptación (REQ-xx) **y sus instancias**». La forma de una instancia es la forma del contrato.
+- **Dónde vive el validador y cómo se llama es plano de método**, de Alex, como `check_canon.js`.
+- **El diseño y el código son construcción**, de quien lo escriba, y se demuestran contra el banco.
+
+Y el esquema de instancia debería entrar **como propuesta por la bandeja**, no por acuerdo verbal:
+es el primer artefacto que Alex y yo compartimos, y si no está ratificado antes de que ninguno
+empiece, tenemos otra vez el problema del 3 de agosto.
+
+## El aviso que ya os habéis dado, y que nos aplica
+
+ADR-049 existe porque el 3-ago Alex subió los visuales en su clon a las 15:51 y una sesión tuya subió
+los mismos visuales, generados por separado, a las 19:26: «el trabajo se pagó dos veces, porque no
+existía ningún sitio donde uno pudiera ver que el otro lo tenía en marcha».
+
+Ese es exactamente el riesgo de este reparto. Lo que lo cierra no es buena voluntad: es que el
+**esquema de eventos** —que tu hoja de ruta ya declara «el único artefacto que tocan los tres, lo
+custodia B y solo cambia con versión y aviso»— y el **esquema de instancia del banco** estén
+ratificados antes de que cualquiera escriba código contra ellos.
+
+## Lo que la bandeja resuelve, y me viene bien
+
+La aportación sobre resolución de identidades y el mecanismo de retención y purga (punto 3.e) ya no
+tiene que entrar «como nota de apoyo y a ver qué pasa». Entra como **propuesta**, se crea sin pedir
+permiso porque una propuesta es inerte, y su veredicto es tuyo porque es materia funcional. Eso está
+bien pensado.
+
+## Dos preguntas que no sé responder y hacen falta
+
+**¿Dónde va `/src`?** ADR-049 dice que «el repositorio de construcción declara en su memoria que
+enviará propuestas a este repo», o sea que ya existe otro repositorio. Pero `CLAUDE.md` sigue
+diciendo que `/src` contendrá el código en `indramind-poc`. Necesito saber en qué repo trabajo y con
+qué permisos, porque hoy solo tengo lectura.
+
+**¿Cuánto tiempo tiene Alex de verdad?** Lo que se ve en el repo dice mucho; lo que dijiste el 31-jul
+decía lo contrario. De eso depende si las ablaciones son suyas de principio a fin.
 
 ## Cadencia
 
 El ratito diario que pediste cuando estés, más un punto semanal de media hora los tres **contra el
-estado del banco**. Tener el banco como orden del día es lo que evita que la reunión se convierta
-en intercambio de opiniones.
+estado del banco**. Tener el banco como orden del día es lo que evita que la reunión se convierta en
+intercambio de opiniones.
