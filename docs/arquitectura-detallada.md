@@ -15,6 +15,12 @@
 > el canon decidió después algo distinto de lo que aquí se propone, el texto se conserva y se
 > marca con **[DIVERGENCIA n]**, cuyo desarrollo está en
 > [`divergencias-con-el-canon.md`](divergencias-con-el-canon.md).
+>
+> **Corrección técnica (2026-08-06).** La sección 4.D describía la clave de enlace como «un hash con
+> sal» y la calificaba de irreversible. Era un error nuestro: la sal no es secreta y el espacio de
+> entrada de este dominio es enumerable. Queda corregida a **HMAC con clave custodiada fuera de la
+> base de datos**, con la explicación al lado y marcada **[CORRECCIÓN 2026-08-06]**. Es la única
+> corrección de fondo aplicada a este documento; todo lo demás es el texto de julio.
 
 ## 0. La idea que hay que interiorizar (corrige el modelo mental)
 
@@ -274,16 +280,29 @@ pizarra y se despiertan por suscripción.
 enlaces y punteros**, no un almacén. La resolución de identidad usa **dos identificadores con
 trabajos distintos** — esta es la clave que suele confundir:
 
-- **`match_key` — para ENLAZAR** (deduplicar/resolver): un **hash con sal** de una clave fuerte
-  (DNI, matrícula…). Es **irreversible y nunca se descifra**: cuando llega una clave nueva se
-  **re-hashea y se compara**. Así se afirma que es el mismo actor **sin guardar la clave en claro**.
+- **`match_key` — para ENLAZAR** (deduplicar/resolver): el resultado de aplicar una **función con
+  clave secreta** (un HMAC) a una clave fuerte (DNI, matrícula…). Cuando llega una clave nueva se
+  **recalcula y se compara**. Así se afirma que es el mismo actor **sin guardar la clave en claro**.
+  La clave del HMAC vive en un **custodio aparte** —un KMS o un HSM—, nunca como columna de la
+  base ni como constante de configuración: eso es lo que hace inviable la inversión.
+  **[CORRECCIÓN 2026-08-06]**
+
+> **Por qué no basta un hash con sal**, que es lo que decía este documento hasta el 6-ago-2026. La
+> sal **no es secreta** —se guarda junto al hash, por diseño— y el espacio de entrada de este
+> dominio es diminuto: un DNI son unos 10⁸ candidatos, y recorrerlos comparando es cuestión de
+> minutos en una GPU. Quien se lleve la base, se lleva los DNI. Hay además un problema funcional:
+> para enlazar, la función tiene que ser **determinista**, lo que prohíbe una sal aleatoria por
+> registro; y una sal compartida por toda la tabla ya no es sal, es **pimienta**, que solo sirve si
+> es secreta. De ahí el HMAC con clave custodiada: para invertirlo hay que comprometer dos cosas en
+> dos sitios distintos. La formulación anterior prometía una irreversibilidad que no tenía, y eso es
+> peor que no prometerla, porque sostiene ante un DPD una postura que no aguanta.
 - **`handle` — para RECUPERAR**: el identificador propio del registro **en cada fuente**
   («veh-4471 en la DGT»), guardado como puntero. La consulta federada es *«dame el registro 4471
   de la DGT»*, **no** *«dame a la persona con DNI X»*. No hace falta descifrar nada.
 
 ```yaml
 entity:      { id: E-7731, tipo: persona }               # id sintético, sin nombre
-match_key:   { entity: E-7731, hash: sha256(sal+DNI) }   # ENLAZAR · irreversible
+match_key:   { entity: E-7731, mac: hmac_sha256(clave_kms, DNI) }  # ENLAZAR · clave fuera de la base
 entity_ref:  { entity: E-7731, fuente: DGT,       handle: veh-4471, desde: ..., confianza: 1.0 }
              { entity: E-7731, fuente: caso_2023,  handle: per-99120, metodo: match_DNI }
 relacion:    { origen: E-7731, tipo: OWNS, destino: V-4482, fuente: DGT }
