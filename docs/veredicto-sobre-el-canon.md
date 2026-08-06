@@ -62,6 +62,37 @@ en dos ámbitos:
 La brecha que temías al partir el documento no se abre, porque lo que queda del lado libre sigue
 atado por el banco. Entra a la reunión con esto y no con «son requisitos, punto».
 
+**Y hay una segunda mitad que creo que no has visto, y es la que remata el argumento.** El 29 de
+julio me dijiste esto:
+
+> «No sé si hay una forma de plantear unos requisitos puramente funcionales que te deriven a esa
+> arquitectura… Lo primero que nos contaste es ya una arquitectura. ¿Pero qué funcionalidad te
+> deriva en esa arquitectura? **Yo no sabría expresarla.**»
+
+**Ya la has expresado.** Está en tu canon, en forma de invariantes, presupuestos y anti-requisitos —
+que son exactamente los requisitos no funcionales que fuerzan una arquitectura sin describirla.
+Ninguno de estos seis dice cómo organizar el código; todos dicen qué tiene que pasar al ponerlo a
+funcionar, y se comprueban desde fuera:
+
+| Norma | Lo que exige | Cómo se mide |
+|---|---|---|
+| **INV-05** | El replay de los mismos eventos, fijadas las versiones, da las mismas salidas en las capas deterministas | Corre el banco dos veces: diff = 0 |
+| **INV-04** | Todo juicio lleva grado explícito, y el grado es **siempre** cálculo determinista | Dos pasadas, grado idéntico |
+| **INV-10** | Cada juicio va etiquetado determinista o generativo | Se mira la salida |
+| **AR-03** | Lo que decide es determinista y reproducible | Vía INV-05 |
+| **PRE-04** | El coste crece sublinealmente con las fuentes; queda excluido leer los flujos completos con la capa generativa | Se mide con 50 fuentes en vez de 5 |
+| **PRE-05** | Las invocaciones generativas están acotadas, monitorizadas y presupuestadas | Se cuentan |
+
+Y ahora imagina que Paradigma lo monta con el modelo correlacionando. REQ-01 puede pasar una vez,
+por suerte. A la segunda pasada, INV-05 exige diff = 0 y el modelo ordena las hipótesis distinto:
+**falla**. REQ-02 pide **cero** interrupciones por eventos en agenda en todo el banco, y un modelo
+que «casi siempre» respeta la agenda acaba interrumpiendo: **falla**. Y PRE-04 se cae al medir.
+
+Nadie les ha dicho «separa lo determinista de lo generativo». Lo descubren fallando. **La
+arquitectura no está impuesta: está implicada** — es la única que pasa el banco. Ese es el argumento
+que te deja sin injerencia que reprochar, y lo tenías escrito desde antes de que empezara la
+discusión.
+
 **b) El canon es excelente como canon e inservible como entregable.** Esto es lo que me
 incomoda decirte y por lo que me pediste que lo mirara. Está escrito para un lector —tú, con
 Claude recuperando por identificador— y funciona muy bien para eso. Pero el lector del otro lado
