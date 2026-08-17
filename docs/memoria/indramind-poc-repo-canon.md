@@ -8,7 +8,9 @@ metadata:
   modified: 2026-07-31T21:08:44.984Z
 ---
 
-El repo de José está clonado en `/Users/juanjo/Code/indramind-poc` (remoto `git@github.com-jolmedilla:jruizcristina/indramind-poc.git`). Es **la PoC vertical del motor cognitivo sobre el caso de aglomeraciones de Valencia**, y es distinto de `/Users/juanjo/Code/indra-mind`, que son los cuadernos privados de asesoría de Juanjo. Ver [indra-mind-engagement](indra-mind-engagement.md) y [indra-mind-producto](indra-mind-producto.md).
+El repo de José vive **dentro de este repositorio, en `indramind-poc/`, como submódulo de git** (`https://github.com/jruizcristina/indramind-poc.git`, siguiendo la rama `main`). Que sea un submódulo significa que es un repositorio aparte, con su propio historial y su propio gobierno: este repositorio solo guarda un puntero al commit en el que está. Un clon nuevo trae la carpeta vacía hasta que se ejecuta `git submodule update --init`.
+
+Es **la PoC vertical del motor cognitivo sobre el caso de aglomeraciones de Valencia**, y es de José: se rige por su `CLAUDE.md` y por su canon, no por las reglas de este repositorio. El repositorio que lo contiene son los cuadernos privados de asesoría de Juanjo, y **nada de lo que hay en ellos puede entrar en el submódulo**, que lo leen José y Alejandro. Ver [indra-mind-engagement](indra-mind-engagement.md) y [indra-mind-producto](indra-mind-producto.md).
 
 **Arranque obligado de toda sesión** (lo dice su `CLAUDE.md`): leer `CLAUDE.md` → `docs/indice-del-canon.md` → `docs/decisiones.md`. El índice es el único inventario válido de documentos y versiones.
 

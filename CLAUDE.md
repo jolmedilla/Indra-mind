@@ -28,6 +28,16 @@ Fase siguiente (probable, primer mes o dos): prototipo o PoC sencillo. Tecnolog�
 - `docs/` — Notas de arquitectura, visión del producto, análisis y decisiones.
 - `docs/memoria/` — El contexto de trabajo acumulado: quién es quién, qué se decidió y por qué, y qué sigue sin saberse. Es una copia versionada de la memoria que Claude Code mantiene fuera del repositorio, para que sobreviva a un clonado en otra máquina.
 - `presentaciones/` — Material para las reuniones con el cliente.
+- `indramind-poc/` — **Submódulo de git**, no una carpeta de este repositorio. Es el repo del cliente (`https://github.com/jruizcristina/indramind-poc.git`, rama `main`): el canon del motor cognitivo y la PoC vertical del caso de aglomeraciones.
+
+## El submódulo `indramind-poc`
+
+Es un repositorio aparte, con su propio historial, su propio `CLAUDE.md` y su propio gobierno. Este repositorio no guarda su contenido: guarda un puntero al commit en el que está.
+
+- Tras clonar, la carpeta viene vacía hasta que se ejecuta `git submodule update --init`. Para traer lo último del cliente, `git submodule update --remote indramind-poc`.
+- **Dentro del submódulo mandan sus reglas, no las de aquí.** Toda sesión que vaya a tocarlo empieza leyendo su `CLAUDE.md`, y después `docs/indice-del-canon.md`, `docs/decisiones.md` y `propuestas/README.md`. Ahí el canon es la fuente de verdad y las propuestas se tramitan por su bandeja.
+- Los commits dentro del submódulo son suyos y se hacen desde dentro. Cuando avanza, este repositorio ve un cambio de puntero: eso se commitea aparte y con ese sentido, «actualizado el puntero del submódulo», nunca mezclado con cambios de los cuadernos.
+- **Nada de lo que hay en este repositorio puede acabar dentro del submódulo.** `docs/` contiene citas privadas del cliente, valoraciones sobre terceros y cifras de facturación; el submódulo lo leen el cliente y su equipo. La frontera es en un solo sentido: de aquí se lee lo suyo, pero lo nuestro no baja.
 
 ## Notas para trabajar aquí
 
