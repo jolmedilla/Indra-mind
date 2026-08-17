@@ -11,6 +11,18 @@
           }
         ]
       }
+    ],
+    "PreCompact": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"${CLAUDE_PROJECT_DIR:-.}/.claude/hooks/precompact-contexto.sh\"",
+            "timeout": 30,
+            "statusMessage": "Reinyectando el contexto del proyecto…"
+          }
+        ]
+      }
     ]
   }
 }
