@@ -5,10 +5,10 @@ metadata:
   node_type: memory
   type: project
   originSessionId: e2e894d9-1423-40b3-827d-6e63a0238810
-  modified: 2026-08-12T06:44:35.911Z
+  modified: 2026-08-17T07:06:54.633Z
 ---
 
-Estado al **10-ago-2026**. Sustituye a la vía de «facturar a través de una empresa» que aparecía en [indra-mind-engagement](indra-mind-engagement.md): el canal es **Malt**, y Juanjo factura como **autónomo español**.
+Estado al **10-ago-2026**. Sustituye a la vía de «facturar a través de una empresa» que aparecía en [[indra-mind-engagement]]: el canal es **Malt**, y Juanjo factura como **autónomo español**.
 
 ## Alta fiscal (9-ago-2026)
 
@@ -52,8 +52,16 @@ Las **10 horas previas** (4 de julio + 6 de la semana del 3-ago) se declararon e
 ## Cabos sueltos
 
 - **Autofacturación, y a quién se factura de verdad.** Héctor Cárdenas (Malt) el 10-ago: *«la plataforma emite la factura automáticamente, siendo **Malt Community** la entidad facturada, y luego se hace otra factura entre Malt y tu cliente»*. Es decir, **Juanjo no factura a Indra**: factura a Malt Community, y Malt factura a Indra. Si Malt Community es francesa, la operación es **prestación intracomunitaria B2B — inversión del sujeto pasivo, 0 % de IVA y sin retención de IRPF**, que es justo para lo que sirve el alta en el ROI. **En el presupuesto se puso 21 %**: hay que confirmar país y NIF-IVA de Malt Community y corregirlo antes de la primera factura.
-- **Si no hay retención**, decae la exención del 70 % y toca **modelo 130** trimestral más modificar la casilla 600 del censo.
-- Malt emite las facturas **en nombre de Juanjo**; no debe emitir ninguna él. Se descargan de «Facturas y pagos». **Documentación validada el 11-ago-2026.**
+- **La retención sí se aplica, y la configura Juanjo.** Héctor Cárdenas, 12-ago: «la retención que se aplica la debes poner tú mismo en Ajustes de Empresa, en la pestaña Empresa». Como el alta es de este año, corresponde el **7 %** (año de alta más los dos siguientes). Con retención no decae la exención del 70 %, así que **no hay modelo 130** ni hace falta tocar la casilla 600.
+- Malt emite las facturas **en nombre de Juanjo**; no debe emitir ninguna él. Se descargan de «Facturas y pagos». **Documentación validada por completo el 12-ago-2026.**
+
+## Dónde está el presupuesto (17-ago-2026)
+
+**Doble validación.** Espe, 13-ago: primero la **pre-aceptación del manager** —Enrique— y solo entonces le llega a **subcontrataciones de Indra** el correo de validación final, que allí lleva **María Gonzalez-Aller**.
+
+**Enrique lo tiene y no lo acepta todavía.** Sus palabras del 13-ago: «Se ha recibido presupuesto y estoy a la espera de apertura de necesidad y OK de subcontratación para la aceptación del mismo». El cuello de botella sigue siendo la apertura de la necesidad.
+
+**José aún no tiene cuenta en Malt.** Espe le reenvió el enlace el 13-ago para que sea él quien valide las horas en el futuro; mientras tanto ese papel es de Enrique.
 - **Espe avisó** de que no se pueden imputar horas antes del **alta en la plataforma interna de Indra**; la fecha de inicio del presupuesto es orientativa. Dejó por escrito, dos veces, que empezar a colaborar antes de la validación **no es el procedimiento correcto**.
 - Se aceptaron las **Condiciones Generales de Uso de Indra sin leerlas**. Conviene descargar copia.
 - Verificación de los datos de empresa en Malt: ~48 h desde el 10-ago.
