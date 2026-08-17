@@ -26,9 +26,11 @@ Fase siguiente (probable, primer mes o dos): prototipo o PoC sencillo. Tecnolog�
 ## Estructura
 
 - `docs/` — Notas de arquitectura, visión del producto, análisis y decisiones.
+- `docs/memoria/` — El contexto de trabajo acumulado: quién es quién, qué se decidió y por qué, y qué sigue sin saberse. Es una copia versionada de la memoria que Claude Code mantiene fuera del repositorio, para que sobreviva a un clonado en otra máquina.
 - `presentaciones/` — Material para las reuniones con el cliente.
 
 ## Notas para trabajar aquí
 
+- **Empieza por `docs/memoria/README.md`.** Es el índice del contexto acumulado desde julio de 2026, y ahorra volver a derivar cosas ya decididas. El punto de continuación es `docs/memoria/indra-mind-estado-y-siguientes-pasos.md`. Ten en cuenta que es una instantánea fechada: si contradice al repositorio o a lo que diga el usuario, manda lo segundo.
 - Antes de proponer arquitectura o tecnología, parte de lo que esté escrito en `docs/` sobre el producto; no inventes requisitos que el cliente no haya expresado.
 - Este repositorio puede contener información de un cliente. Trátala como confidencial: no la publiques ni la envíes a servicios externos sin pedir permiso.
