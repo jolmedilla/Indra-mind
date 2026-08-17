@@ -34,7 +34,8 @@ Fase siguiente (probable, primer mes o dos): prototipo o PoC sencillo. Tecnolog�
 
 Es un repositorio aparte, con su propio historial, su propio `CLAUDE.md` y su propio gobierno. Este repositorio no guarda su contenido: guarda un puntero al commit en el que está.
 
-- Tras clonar, la carpeta viene vacía hasta que se ejecuta `git submodule update --init`. Para traer lo último del cliente, `git submodule update --remote indramind-poc`.
+- Tras clonar, la carpeta viene vacía hasta que se inicializa el submódulo. De eso se encarga solo el hook `SessionStart` de `.claude/settings.json`, que ejecuta `.claude/hooks/init-submodules.sh` al arrancar cada sesión; si falla —por ejemplo, por falta de credenciales para el repositorio privado— avisa y la sesión sigue sin el canon delante. A mano sería `git submodule update --init --recursive`.
+- Para traer lo último del cliente, `git submodule update --remote indramind-poc`. Eso no lo hace el hook a propósito: mover el puntero es una decisión, y se commitea aparte.
 - **Dentro del submódulo mandan sus reglas, no las de aquí.** Toda sesión que vaya a tocarlo empieza leyendo su `CLAUDE.md`, y después `docs/indice-del-canon.md`, `docs/decisiones.md` y `propuestas/README.md`. Ahí el canon es la fuente de verdad y las propuestas se tramitan por su bandeja.
 - Los commits dentro del submódulo son suyos y se hacen desde dentro. Cuando avanza, este repositorio ve un cambio de puntero: eso se commitea aparte y con ese sentido, «actualizado el puntero del submódulo», nunca mezclado con cambios de los cuadernos.
 - **Nada de lo que hay en este repositorio puede acabar dentro del submódulo.** `docs/` contiene citas privadas del cliente, valoraciones sobre terceros y cifras de facturación; el submódulo lo leen el cliente y su equipo. La frontera es en un solo sentido: de aquí se lee lo suyo, pero lo nuestro no baja.
