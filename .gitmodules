@@ -2,3 +2,7 @@
 	path = indramind-poc
 	url = https://github.com/jruizcristina/indramind-poc.git
 	branch = main
+[submodule "indramind-demostrador"]
+	path = indramind-demostrador
+	url = https://github.com/jolmedilla/indramind-demostrador.git
+	branch = main
