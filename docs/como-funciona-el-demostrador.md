@@ -197,7 +197,37 @@ Las dos instancias del hito 1 **comparten cinta y líneas base** y solo difieren
 
 ---
 
-## 7 · Cómo reproducir todo esto
+## 7 · Trabajo pendiente, en orden
+
+De la revisión del código del 18-ago-2026, tras leer este documento. Tres conclusiones, dos de ellas nuevas.
+
+### 7.1 · Partir `dominio.py` en correlador y razonador — **lo primero**
+
+Hoy `RazonadorDominio` acumula cuatro responsabilidades que el canon separa: evaluar la desviación contra la línea base (C-02), **correlacionar** fuentes independientes por espacio, tiempo y entidad (C-03), **formar las hipótesis en competencia** con los priores de la doctrina (C-04), y decidir si se interrumpe a un puesto (la política de interrupción, C-09). La correlación —`_converge()`— es CEP de manual y está pegada al razonamiento de verdad.
+
+Hoy no se nota porque todo es determinista. Se notará en cuanto el razonador llame al modelo, por dos motivos normativos: el coste debe crecer sublinealmente con las fuentes, lo que exige que algo barato decida **cuándo** despertar a lo caro (PRE-04); y cada juicio va etiquetado como determinista o generativo (INV-10), lo que exige saber dónde acaba uno y empieza el otro.
+
+**El motivo más fuerte es de argumento, no de ingeniería.** Hoy la ablación es un parámetro del pack: P0 y P1 son el mismo código con otro umbral, y alguien puede decir con razón «habéis subido el umbral y por eso falla». Si el corte fuera estructural —P0 es el correlador solo; P1 es el correlador **más el razonador enchufado detrás**— la ablación sería literalmente quitar una pieza. El argumento se vuelve mucho más difícil de rebatir.
+
+**Alcance:** el correlador emite un *candidato*; el razonador lo convierte en detección con sus hipótesis; los perfiles se rehacen para que P0 sea la ausencia del razonador y no un umbral distinto.
+
+### 7.2 · Un adaptador para poder examinar otras implementaciones — después
+
+El acoplamiento no es de lenguaje, como estaba anotado en §6: **es de forma**. El runner da por supuesto que la puerta de entrada es un objeto con `publicar(Evento)`, y otra implementación podría ingerir por Kafka, REST, gRPC o fichero. Y no monta solo el razonador: carga el pack y construye líneas base, agenda, expediente, **bus** y razonador, cableándolos. Es el ensamblador del sistema que examina.
+
+El canon pide menos de lo que hemos implementado: «solo puerta delantera» es un contrato semántico —bus, consultables y API de acciones—, no una clase.
+
+**Alcance:** un adaptador de tres verbos, `sembrar(dado)`, `publicar(evento)` y `expediente()`. Hoy uno en proceso; mañana uno por HTTP. **Las instancias del banco no cambian ni una línea**: el banco sigue siendo el contrato y solo cambia el enchufe. Consecuencia asumida: el expediente pasa a ser un esquema de intercambio, que es lo que el canon ya pide al exigirlo autosuficiente y única superficie de aserción (REQ-40).
+
+No aporta nada a septiembre y se diseña mejor con el motor ya partido por dentro, así que va después de 7.1.
+
+### 7.3 · Una opción `--traza` en el runner — barata y útil
+
+Para ver el paso a paso hay que montar el mundo a mano desde Python. Es la herramienta que más ayuda a estudiar y a depurar, y es un rato de trabajo.
+
+---
+
+## 8 · Cómo reproducir todo esto
 
 ```sh
 cd indramind-demostrador
