@@ -1,6 +1,6 @@
 # Índice del entregable para Paradigma
 
-> **Propuesta · 6-ago-2026** · Desarrolla el punto 3.a de
+> **Propuesta · 6-ago-2026, cifras actualizadas al 19-ago-2026** · Desarrolla el punto 3.a de
 > [`veredicto-sobre-el-canon.md`](veredicto-sobre-el-canon.md): derivar del canon un documento
 > corto y verificable, en vez de entregar el canon.
 >
@@ -28,10 +28,10 @@ diseñado el sistema».
 | **4** | **Lo que el motor NO es: los anti-requisitos.** AR-01..07 | §7 **verbatim** | 1 |
 | **5** | **Los presupuestos.** PRE-01..09, cada uno con su estatus: compromiso del motor o parámetro de despliegue | §6 **verbatim** | 1 |
 | **6** | **Qué se cambia sin tocar código.** CFG-01..09: la bipartición doctrina / configuración semántica | §5 **verbatim** | 1½ |
-| **7** | **El contrato de aceptación: el banco.** Las 61 filas en sus seis familias, con su métrica | §8 **verbatim** | 12 |
+| **7** | **El contrato de aceptación: el banco.** Las 62 filas en sus seis familias, con su métrica | §8 **verbatim** | 12 |
 | **8** | **Cómo se demuestra y cómo se discute.** El contrato del arnés (solo puerta delantera; el arnés es dueño del reloj; el expediente es la única superficie de aserción), los perfiles de ablación, y el procedimiento de alegación: contra filas, invariantes o presupuestos concretos, resuelto con evidencia sobre el banco | **A redactar** (`banco/README.md` + ADR-035) | 1½ |
 | **9** | **Glosario mínimo.** Solo los términos necesarios para leer lo anterior | §2, subconjunto | 2 |
-| **A** | **Anexo · Dónde está el porqué.** Los 50 ADR, solo número y título, en una tabla. Para que puedan pedir el que les interese | `decisiones.md`, índice | 1½ |
+| **A** | **Anexo · Dónde está el porqué.** Los 54 ADR, solo número y título, en una tabla. Para que puedan pedir el que les interese | `decisiones.md`, índice | 1½ |
 
 **Total: unas 30 páginas**, de las cuales 12 son el banco — que es el punto.
 
@@ -39,7 +39,7 @@ diseñado el sistema».
 
 | Fuera | Motivo |
 |---|---|
-| Los cuerpos de los 50 ADR | Son el *porqué*. Se ofrecen a demanda por el anexo: «¿por qué esto es así? pide el ADR-nn» |
+| Los cuerpos de los 54 ADR | Son el *porqué*. Se ofrecen a demanda por el anexo: «¿por qué esto es así? pide el ADR-nn» |
 | El corpus de contraste (36 fichas) y los planes territoriales (20) | Es material de apoyo: se cita, no se obedece. Munición de reserva si alguien discute una decisión concreta |
 | La nota del CECOES, el informe FAST | Ídem |
 | El método de consultoría | Es cómo se implanta en cliente, no qué debe hacer el producto |
