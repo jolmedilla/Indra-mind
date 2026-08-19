@@ -16,6 +16,30 @@
 
 ---
 
+## Dónde encajan estos dos capítulos
+
+El entregable tiene diez secciones y un anexo. **Ocho salen del maestro de requisitos, y solo dos se escriben** — los dos que van a continuación, marcados en negrita:
+
+| § | Contenido | De dónde sale |
+|---|---|---|
+| **0** | **Cómo leer este documento.** La frontera de dos ámbitos y la vía de inviabilidad | **A redactar** |
+| 1 | Qué es el motor cognitivo: la escalera de objetos, el espejo máquina/persona, la separación determinista/generativa | §2 del maestro, aligerado |
+| 2 | Lo que debe garantizar: los invariantes, con su columna de verificación | §4 *verbatim* |
+| 3 | Lo que debe poder hacer: las capacidades, en sus cuatro grupos | §3 *verbatim* |
+| 4 | Lo que no es: los anti-requisitos | §7 *verbatim* |
+| 5 | Los presupuestos, con su estatus: compromiso del motor o parámetro de despliegue | §6 *verbatim* |
+| 6 | Qué se cambia sin tocar código: la bipartición doctrina / configuración semántica | §5 *verbatim* |
+| 7 | **El contrato de aceptación: el banco.** Las 62 filas con su métrica | §8 *verbatim* — 12 págs |
+| **8** | **Cómo se demuestra y cómo se discute.** El arnés, la ablación y el procedimiento de alegación | **A redactar** |
+| 9 | Glosario mínimo: solo los términos necesarios para leer lo anterior | §2, subconjunto |
+| A | Anexo: los 54 ADR, solo número y título, para poder pedir el que interese | `decisiones.md` |
+
+Unas 30 páginas, de las que **12 son el banco**. No contiene ni un solo cuerpo de decisión de arquitectura, a propósito.
+
+El detalle —el reparto de páginas, qué queda fuera y por qué, y cómo entraría en el repositorio— está en [`indice-entregable-paradigma.md`](indice-entregable-paradigma.md).
+
+---
+
 # § 0 · Cómo leer este documento
 
 Este documento dice **qué tiene que hacer y qué tiene que garantizar** el motor cognitivo de IndraMind Security. No dice cómo construirlo, y esa omisión es deliberada.
