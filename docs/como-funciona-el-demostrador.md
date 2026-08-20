@@ -1,7 +1,8 @@
 # Cómo funciona el demostrador
 
-> **Para entender el código del hito 1** · 17-ago-2026 · Se refiere al repositorio
-> `jolmedilla/indramind-demostrador` en su commit `154f25d`.
+> **Para entender el código del hito 1** · 17-ago-2026, actualizado el 19-ago tras
+> partir el correlador del razonador · Se refiere al repositorio
+> `jolmedilla/indramind-demostrador`, rama `particion-correlador-razonador` (PR #2).
 >
 > Este documento explica el código siguiendo una ejecución real de principio a fin,
 > no fichero por fichero. Las trazas que aparecen están capturadas de una ejecución
@@ -39,7 +40,7 @@ Ejecutamos el escenario REQ-01 —convergencia de fuentes sin evento en agenda�
 - Siembra las **líneas base** del bloque `dado`: para la plaza del Ayuntamiento en franja de tarde, la ocupación tiene media 1450 y desviación 240; las salidas de metro, media 300 y desviación 60; el aforo de paso, media 180 y desviación 40.
 - Siembra la **agenda**, que en este escenario está vacía. Esa ausencia es la mitad del caso.
 - Crea un **expediente** vacío y un **bus** con el catálogo de esquemas.
-- Instancia el **razonador de dominio** con el perfil pedido, y lo suscribe al bus.
+- Monta el **correlador** y le **enchufa el detector** que el perfil declare en el pack: el razonador de dominio, o el detector de umbral si el perfil es el ablacionado.
 
 **Después reproduce la cinta** (`runner.reproducir`). Ordena los eventos del bloque `cuando` por tiempo de evento y los publica uno a uno. El motor no distingue esto de la vida real: le llegan eventos por el bus, y ya.
 
@@ -139,17 +140,37 @@ Cada hipótesis lleva su `prior` —el peso que la doctrina le da antes de mirar
 
 Y las descartadas conservan su `motivo_descarte` escrito, que es lo que exige INV-03: ninguna conclusión adopta explicación única habiendo alternativas plausibles.
 
-### `motor/dominio.py` — el razonador
+### `motor/correlacion.py` — el correlador
 
-Es donde está la diferencia entre los dos perfiles.
+Convierte cada evento en una **observación**: la lectura con su desviación ya calculada. Y ahí termina su trabajo. No sabe qué es una aglomeración, ni qué es una mascletà, ni cuándo hay que alarmar.
 
-`_hay_motivo()` bifurca: en modo `umbral_simple` mira un solo tipo contra un umbral alto; en modo `convergencia` llama a `_converge()`, que cuenta cuántas **fuentes distintas** están desviadas dentro de la ventana. Se exige que sean fuentes distintas para que no baste con que una fuente ruidosa se dispare sola.
+Detrás se **enchufa un detector**, desde fuera y en tiempo de montaje. Esa costura es la frontera entre lo determinista barato y lo que puede llegar a ser caro: el correlador mira todos los eventos, el detector solo se despierta cuando hay algo que mirar. Sin ella no hay forma de que el coste crezca sublinealmente con las fuentes (PRE-04) ni de etiquetar qué juicio es determinista y cuál generativo (INV-10).
 
-`_hipotesis()` es donde entra la agenda como **consultable** —no como fuente de eventos: el razonador le pregunta y ella responde—. Con evento autorizado, gana «evento esperado» y se descarta la otra con su motivo. Sin él, al revés.
+También es la única puerta a los datos crudos: un detector nunca toca el bus ni las líneas base, le pregunta al correlador por la ventana.
 
-`_decidir_interrupcion()` aplica la política: si la vencedora es «evento esperado», no se interrumpe y se anota por qué. **La vigilancia continúa en ambos casos**; lo que cambia es si se llama la atención de una persona.
+### `motor/dominio.py` — el razonador de dominio
 
-Y `_ya_detectado` implementa INV-11: una detección por hecho físico. Si la misma aglomeración se ve por tres fuentes, no nacen tres detecciones.
+La pieza cuyo valor mide la ablación. Hace las dos cosas que una capa determinista genérica no puede hacer, porque son conocimiento de dominio y viajan en el pack.
+
+**Sumar señales que por separado no dirían nada.** `_converge()` cuenta cuántas **fuentes distintas** están desviadas dentro de la ventana. Que sean distintas es lo que evita que baste con una fuente ruidosa disparándose sola.
+
+**Preguntar por lo previsto antes de alarmar.** `_hipotesis()` consulta la agenda como discriminante. Con evento autorizado gana «evento esperado» y se descarta la otra con su motivo escrito; sin él, al revés. Nunca una sola explicación habiendo alternativas plausibles (INV-03).
+
+### `motor/detectores.py` — lo común, y el término de comparación
+
+La clase base guarda las tres obligaciones de todo detector: una detección por hecho físico (INV-11), adjuntar la evidencia de la ventana, y pasar por la política antes de interrumpir.
+
+Y aquí vive `DetectorUmbral`, que es **el perfil P0**: lo único que puede hacer un sistema sin conocimiento de dominio, mirar un número y compararlo con una línea. Su dilema no tiene salida: con el listón alto llega tarde, con el listón bajo llena la sala de falsas alarmas. Y como no tiene a quién preguntar por lo previsto, solo puede formar una explicación — lo que ya incumple INV-03 por sí mismo.
+
+### `motor/agenda.py` y `motor/politica.py`
+
+La agenda es la forma **declarada** de la línea base (C-02): no la estadística sino el plan, la orden o el acto autorizado, cuyo incumplimiento también es desviación. Es un **consultable**, no una fuente: nadie la publica en el bus.
+
+La política de interrupción (C-09) está aparte porque es una decisión de otra naturaleza. Un detector dice qué está pasando; la política dice si eso merece robarle la atención a una persona. **La vigilancia continúa en ambos casos**; lo que cambia es si suena algo.
+
+### `motor/ensamblaje.py` — qué lleva cada perfil
+
+Aquí la ablación se vuelve estructural. Un perfil no es un parámetro que cambie el comportamiento de una clase: es **qué se enchufa detrás del correlador**, declarado por su nombre en el pack. El perfil sin razonador de dominio se obtiene no montándolo.
 
 ### `src/runner.py` — el examinador
 
@@ -201,7 +222,7 @@ Las dos instancias del hito 1 **comparten cinta y líneas base** y solo difieren
 
 De la revisión del código del 18-ago-2026, tras leer este documento. Tres conclusiones, dos de ellas nuevas.
 
-### 7.1 · Partir `dominio.py` en correlador y razonador — **lo primero**
+### 7.1 · ~~Partir `dominio.py` en correlador y razonador~~ — **hecha el 19-ago-2026**
 
 Hoy `RazonadorDominio` acumula cuatro responsabilidades que el canon separa: evaluar la desviación contra la línea base (C-02), **correlacionar** fuentes independientes por espacio, tiempo y entidad (C-03), **formar las hipótesis en competencia** con los priores de la doctrina (C-04), y decidir si se interrumpe a un puesto (la política de interrupción, C-09). La correlación —`_converge()`— es CEP de manual y está pegada al razonamiento de verdad.
 
@@ -209,7 +230,7 @@ Hoy no se nota porque todo es determinista. Se notará en cuanto el razonador ll
 
 **El motivo más fuerte es de argumento, no de ingeniería.** Hoy la ablación es un parámetro del pack: P0 y P1 son el mismo código con otro umbral, y alguien puede decir con razón «habéis subido el umbral y por eso falla». Si el corte fuera estructural —P0 es el correlador solo; P1 es el correlador **más el razonador enchufado detrás**— la ablación sería literalmente quitar una pieza. El argumento se vuelve mucho más difícil de rebatir.
 
-**Alcance:** el correlador emite un *candidato*; el razonador lo convierte en detección con sus hipótesis; los perfiles se rehacen para que P0 sea la ausencia del razonador y no un umbral distinto.
+**Hecha.** El correlador emite observaciones; el razonador de dominio y el detector de umbral son dos piezas distintas que se enchufan detrás, declaradas por su nombre en el pack; la agenda y la política de interrupción salen a sus propios módulos. Las cuatro ejecuciones dan el mismo resultado que antes, comprobado. Va en la PR #2 del demostrador.
 
 ### 7.2 · Un adaptador para poder examinar otras implementaciones — después
 
