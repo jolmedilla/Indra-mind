@@ -25,6 +25,8 @@ importen, se vuelve a copiar.
 - [El encargo](indra-mind-engagement.md) — cómo se concretó la colaboración, la política interna del proyecto y dónde viven las minutas de las reuniones.
 - [El producto](indra-mind-producto.md) — qué es IndraMind Security, su situación técnica y política, y la postura sobre ontologías y arquitectura.
 - [Instrucciones de José](instrucciones-jose-proyecto-indramind.md) — cómo quiere que se trabaje: estilo crítico, citación de identificadores, cierre de hilo.
+- [La fusión de PR la decide Juanjo](la-fusion-de-pr-la-decide-juanjo.md) — en el demostrador se abre la pull request y se para ahí.
+- [Identidades de git y GitHub](identidades-de-git-y-github.md) — dos cuentas en la misma máquina, y la de por defecto es la equivocada.
 - [El repo de José](indramind-poc-repo-canon.md) — el gobierno del canon, los ADR y las reglas de sesión de `indramind-poc`.
 
 ## Lo administrativo
