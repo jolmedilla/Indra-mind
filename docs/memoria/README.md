@@ -11,7 +11,7 @@ es quién, qué se decidió y por qué, qué no conviene volver a discutir, y qu
 sigue sin saberse. La documentación de producto y de arquitectura está en el
 resto de `docs/`.
 
-**Instantánea del 19-ago-2026.** Es una copia, no la fuente. La memoria viva
+**Instantánea del 25-ago-2026.** Es una copia, no la fuente. La memoria viva
 sigue siendo la de `~/.claude`, que es la que se carga sola en cada sesión, y
 esta copia envejece en cuanto aquella cambia. Cuando haya novedades que
 importen, se vuelve a copiar.
