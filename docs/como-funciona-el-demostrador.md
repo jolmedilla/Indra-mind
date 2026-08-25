@@ -1,8 +1,8 @@
 # Cómo funciona el demostrador
 
 > **Para entender el código del hito 1** · 17-ago-2026 · Actualizado el 25-ago tras
-> la resolución de objeto (PR #3), la salida de la doctrina del código (PR #4) y
-> la opción `--traza` (PR #5) · Se refiere al repositorio
+> la resolución de objeto (PR #3), la salida de la doctrina del código (PR #4),
+> la opción `--traza` (PR #5) y el token `VLC` (PR #6) · Se refiere al repositorio
 > `jolmedilla/indramind-demostrador`, rama `main`.
 >
 > Este documento explica el código siguiendo una ejecución real de principio a fin,
@@ -34,7 +34,7 @@ Y una distinción que aparece más abajo y conviene tener ya: **un objeto no es 
 Ejecutamos el escenario REQ-01 —convergencia de fuentes sin evento en agenda— con el perfil completo:
 
 ```sh
-.venv/bin/python src/runner.py banco/instancias/REQ-01-REF-01.yaml --perfil P1
+.venv/bin/python src/runner.py banco/instancias/REQ-01-VLC-01.yaml --perfil P1
 ```
 
 ### Lo que hace el runner, por orden
@@ -288,7 +288,6 @@ Es **la primera instancia de aceptación común de todas las líneas de construc
 - **El esquema de instancia.** Es una primera forma nacida de tres escenarios. `banco/README.md` lo declara decisión de construcción, así que se puede mover, pero acabará entrando al canon por la bandeja.
 - **El margen de antelación de 90 minutos**, y ahora también **la escala de pesos** del pack y la regla del combinador. Son doctrina y son discutibles.
 - **El bloque `ablacion`** de las instancias, que el runner no lee. El canon dice que el uso vive en suites, así que probablemente deba mudarse allí.
-- **El token `REF`** de nuestros identificadores. El canon dice que el token de hoy es `VLC` y que `REF` llega cuando la ciudad se generalice: vamos por delante y hay que alinearlo.
 - **La regla de fusión geoespacial.** No deshace fusiones, no fusiona por identidad citada —una matrícula, un número de instalación—, y no envejece los objetos más allá de la ventana. Las tres hacen falta y ninguna hacía falta para la aserción (a).
 
 **Y hay una deuda anotada, con su justificación ya caducada.** El runner monta el motor por importación, en el mismo proceso. Este documento decía que el problema era el día que tuviera que examinar **otra** implementación, citando POC-005.
@@ -345,10 +344,10 @@ python3 -m venv .venv
 .venv/bin/pip install -r src/requirements.txt
 
 # Un escenario, con el paso a paso
-.venv/bin/python src/runner.py banco/instancias/REQ-01-REF-01.yaml --perfil P1 --traza
+.venv/bin/python src/runner.py banco/instancias/REQ-01-VLC-01.yaml --perfil P1 --traza
 
 # Las cuatro ejecuciones de la ablación
-for f in REQ-01-REF-01 REQ-02-REF-01; do
+for f in REQ-01-VLC-01 REQ-02-VLC-01; do
   for p in P1 P0; do
     .venv/bin/python src/runner.py banco/instancias/$f.yaml --perfil $p
   done
