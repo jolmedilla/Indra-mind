@@ -47,8 +47,45 @@ Todo lo que sigue vale para los dos.
 - Los commits dentro del submódulo son suyos y se hacen desde dentro. Cuando avanza, este repositorio ve un cambio de puntero: eso se commitea aparte y con ese sentido, «actualizado el puntero del submódulo», nunca mezclado con cambios de los cuadernos.
 - **Nada de lo que hay en este repositorio puede acabar dentro de un submódulo.** `docs/` contiene citas privadas del cliente, valoraciones sobre terceros y cifras de facturación; los dos submódulos los leen el cliente y su equipo, incluido el demostrador, que es de Juanjo pero está compartido con ellos. La frontera es en un solo sentido: de aquí se lee lo suyo, pero lo nuestro no baja.
 
+## OpenSpec: dónde vive el trabajo en curso
+
+Desde el 25-ago-2026 este repositorio lleva **OpenSpec** (`@fission-ai/openspec`),
+en `openspec/`. Existe para que el trabajo en curso no se pierda entre sesiones y
+para que las tareas estén ordenadas en vez de repartidas por la prosa.
+
+**El contexto del proyecto vive en el bloque `context` de `openspec/config.yaml`**,
+no en un `project.md`: esta versión no lo usa, y las skills leen el `config.yaml`.
+Ahí está lo que una sesión fría necesita saber — la topología de los repositorios,
+quién ratifica qué, el vocabulario vinculante, cómo se ejecuta el banco y los
+compromisos vivos —. Si algo de eso cambia, se actualiza ahí.
+
+**Hay tres sitios donde vive «qué estamos haciendo», y no deben solaparse.** Esta
+es la regla, y es la que impide que OpenSpec se convierta en un tercer proceso
+que compita con los dos que ya funcionan:
+
+| Dónde | Qué le toca |
+|---|---|
+| **La bandeja del canon** (`indramind-poc/propuestas/`) | Todo lo que cambie **qué debe hacer** el motor. Obligatoria y ratificada por José. OpenSpec no la sustituye ni la duplica: cuando un cambio necesite tocar el canon, su `tasks.md` incluye «abrir PROP-nnn» como tarea, y el contenido normativo se escribe allí. |
+| **`openspec/changes/`** | Nuestro trabajo de **construcción**: las rebanadas del motor, los refactores, las propuestas que redactamos, las tareas en curso con su estado. |
+| **`docs/memoria/`** | El contexto **narrativo** acumulado: quién es quién, qué se decidió y por qué, las lecciones de método, el contexto político. **Ya no es la lista de tareas**: eso se mudó a `openspec/changes/`. |
+
+**En `openspec/specs/` no van los requisitos del producto.** Son de José y viven
+en el canon. Ahí van las **capacidades de construcción de nuestra línea** — el
+arnés y sus propiedades tal como las implementamos, la resolución de objeto, el
+combinador, la traza —. Es el mismo corte que hace POC-007: el canon posee qué
+debe hacer el motor; cada línea posee cómo lo hace. Escribir ahí un requisito del
+producto sería crear la copia de segunda mano que los dos repositorios existen
+para evitar.
+
+**Y OpenSpec no se instala en los submódulos.** En el canon, porque tiene su
+mecanismo ratificado y colisionaría. En el demostrador, porque su `README` dice
+que allí no se reproduce nada del canon a propósito, y una carpeta de
+especificaciones es exactamente eso. Además, muchas tareas cruzan los dos
+submódulos, y el único sitio desde el que se ven los dos es este.
+
 ## Notas para trabajar aquí
 
+- **Mira `openspec/changes/` al arrancar**, con `openspec list`, para ver qué hay en curso y con qué tareas.
 - **Empieza por `docs/memoria/README.md`.** Es el índice del contexto acumulado desde julio de 2026, y ahorra volver a derivar cosas ya decididas. El punto de continuación es `docs/memoria/indra-mind-estado-y-siguientes-pasos.md`. Ten en cuenta que es una instantánea fechada: si contradice al repositorio o a lo que diga el usuario, manda lo segundo.
 - Antes de proponer arquitectura o tecnología, parte de lo que esté escrito en `docs/` sobre el producto; no inventes requisitos que el cliente no haya expresado.
 - Este repositorio puede contener información de un cliente. Trátala como confidencial: no la publiques ni la envíes a servicios externos sin pedir permiso.

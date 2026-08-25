@@ -1,0 +1,147 @@
+schema: spec-driven
+
+context: |
+  Language: es
+  All artifacts must be written in es.
+  Keep OpenSpec structural headings and SHALL/MUST keywords in English.
+
+  ## Qué es este proyecto
+
+  Colaboración de Juan José Olmedilla como autónomo con **Indra Mind**, un grupo
+  dentro de Indra, en la arquitectura y la construcción de **IndraMind Security**.
+  Cliente y contacto principal: **José Ruíz Cristina**. Dedicación a tiempo parcial.
+  Idioma de trabajo: español de España.
+
+  ## Los tres repositorios, y la frontera entre ellos
+
+  Este repositorio (`indra-mind`) es **privado y propio**: los cuadernos de
+  asesoría, el contexto acumulado y este OpenSpec. Trae dos submódulos.
+
+  - **`indramind-poc/`** es el **canon**, de José. Requisitos, invariantes,
+    decisiones (ADR, POC) y el banco como contrato de aceptación. Es la fuente de
+    verdad. **No se escribe en él salvo por su bandeja de propuestas.**
+  - **`indramind-demostrador/`** es la **construcción**, de Juanjo, compartida con
+    José y Alejandro Asensio. Motor, runner, packs e instancias ejecutables.
+
+  La diferencia es **de materia**: el canon dice qué debe hacer el motor y qué debe
+  garantizar; el demostrador, cómo se hace. Lo que afecte al canon —terminología,
+  invariantes, filas del banco, alcance, doctrina de los packs— **no se escribe: se
+  propone** contra `indramind-poc` por su bandeja, y lo ratifica José.
+
+  Y la frontera es de un solo sentido: **nada de este repositorio puede acabar en
+  los submódulos.** Aquí hay citas privadas del cliente, valoraciones sobre
+  terceros y cifras de facturación.
+
+  ## Quién ratifica qué (ADR-050)
+
+  Dos planos, y la frontera es por materia, no por fichero.
+
+  - **Plano funcional** — titular **José**. Capacidades (C-xx), invariantes
+    (INV-xx), configurabilidad (CFG-xx), presupuestos (PRE-xx), anti-requisitos
+    (AR-xx), el banco (REQ-xx) y sus instancias, el glosario normativo, la doctrina
+    de los packs, la terminología vinculante y el alcance (POC-xx).
+  - **Plano de método y espacio documental** — titular **Alejandro**. Estructura de
+    carpetas, reglas de trabajo, convenciones de nombres, herramientas y el
+    mecanismo de propuestas.
+
+  Ante la duda, o si algo toca los dos planos, **la materia es funcional**.
+
+  ## Cómo se reparte el trabajo con OpenSpec
+
+  Hay tres sitios donde vive «qué estamos haciendo» y no deben solaparse:
+
+  - **La bandeja del canon** (`indramind-poc/propuestas/`) — todo lo que cambie
+    *qué debe hacer* el motor. Obligatoria y ratificada. OpenSpec no la sustituye
+    ni la duplica: cuando un cambio de aquí necesite tocar el canon, su `tasks.md`
+    incluye «abrir PROP-nnn» como tarea, y el contenido normativo se escribe allí.
+  - **`openspec/`** (aquí) — nuestro trabajo de **construcción**: las rebanadas del
+    motor, los refactores, las propuestas que redactamos, las tareas en curso.
+  - **`docs/memoria/`** (aquí) — el contexto narrativo acumulado: quién es quién,
+    qué se decidió y por qué, las lecciones de método. **No es la lista de tareas.**
+
+  En `openspec/specs/` van **capacidades de construcción de nuestra línea** —el
+  arnés y sus propiedades tal como las implementamos, la resolución de objeto, el
+  combinador, la traza—, **nunca los requisitos del producto**, que son de José.
+  Es el mismo corte que hace POC-007: el canon posee qué debe hacer el motor; cada
+  línea posee cómo lo hace.
+
+  ## Vocabulario vinculante (no se inventa)
+
+  - **Demostrador**: el ejercicio de la iteración 1, el de València. «PoC» está
+    retirado (POC-007). Cada intento independiente de construirlo es una **línea de
+    construcción**; la **demo** es el acto de demostración ante la audiencia.
+  - **Escalera de objetos**: evento → **detección** → incidente (con hilos) →
+    operación → sala. «Situación» está reservada al cuadro de situación.
+  - **Objeto** ≠ **detección**. Un objeto es «esto de aquí, del que hablan estas
+    lecturas», y lo resuelve el correlador sin saber de dominio; una detección es
+    «y esto de aquí es un incendio declarado», y la forma un razonador con doctrina.
+  - **Recorrido en seco** (no «verde manual»), con dos capas: la determinista y el
+    ensayo generativo (POC-008, POC-009).
+  - **Par de garantía** (no «par de endurecimiento» ni «variante firmable»): dos
+    escenarios gemelos de una misma garantía, la **variante conforme** pasa y la
+    **variante infractora** falla por diseño (POC-010).
+  - **Obligatorias** y **deseables** (no «núcleo» ni «extensiones baratas») para las
+    filas del alcance del demostrador (POC-011).
+  - **Razonadores** de dominio, de incidente y de sala. Se anclan a objetos, nunca a
+    personas, y no guardan estado entre invocaciones.
+  - **Motor cognitivo** = el producto entero, no una parte ni un componente.
+
+  ## Tres niveles que no se confunden
+
+  La **norma** (la capacidad o el invariante) → la **fila del banco** (REQ-nn, prosa
+  genérica) → la **instancia** (`REQ-xx-VLC-nn`, un caso concreto sobre un mundo
+  concreto). Encima, las **suites**: listas versionadas por uso. **El uso vive en la
+  suite, no en el identificador.**
+
+  El token de mundo de hoy es **`VLC`**; la migración a `REF` está declarada para
+  cuando la ciudad se generalice.
+
+  ## Cómo se ejecuta el banco
+
+  `banco/` son las preguntas del examen; el **arnés** (nuestro `src/runner.py`) es
+  el examinador. «El arnés interpreta las instancias; el motor jamás las lee.»
+
+  Tres propiedades normativas que el arnés cumple:
+
+  1. **Solo puerta delantera**: todo entra por el bus y los consultables; ningún
+     gancho de prueba altera el comportamiento.
+  2. **El arnés es dueño del reloj de tiempo de evento**: el motor nunca consulta la
+     hora del sistema. Sin esto no hay replay, y sin replay no hay INV-05.
+  3. **El expediente es la única superficie de aserción.**
+
+  El arnés aborta si una versión fijada por la instancia no coincide con el
+  artefacto montado.
+
+  ## Reglas de método que ya costaron caro
+
+  - **Una propuesta que no entra en la bandeja no existe.** Se propone el mismo día
+    que se piensa.
+  - **«Lo hablo con X» es una pausa, no un visto bueno.**
+  - **No citar como hecho nada que el lector no pueda verificar** en el repositorio
+    que tiene delante.
+  - **El canon es base de trabajo y vocabulario común, no una autoridad ante la que
+    nuestro análisis se retire.** Estilo crítico: buscar el argumento en contra
+    antes de recomendar.
+
+  ## Cómo se trabaja en el demostrador
+
+  No se commitea directamente a `main`: rama y pull request, que es la superficie
+  por la que Alejandro hace seguimiento y validación. Pero **la PR es para ver, no
+  para bloquear**: quien construye fusiona cuando el cambio está listo, sin esperar
+  revisión. Todos los datos son sintéticos. El repositorio lo lee el cliente.
+
+  ## Compromisos vivos
+
+  - **Firme**: H1 en verde con sus ablaciones —detección anticipada por convergencia
+    (REQ-01) y el espejo de la mascletà (REQ-02)— y **H2 hasta donde llegue** —el
+    razonador de incidente, misiones dentro del presupuesto de latencia (PRE-02,
+    ~60 s)—, para **mediados de septiembre de 2026**.
+  - **No firme**: una horquilla hacia finales de octubre, pedida expresamente sin
+    compromiso. Queda pendiente rehacer la estimación con fundamento.
+
+  ## Al abrir sesión
+
+  El canon se mueve muy rápido. Antes de opinar de nada, `git submodule update
+  --remote indramind-poc` y mirar qué ha entrado. El punto de continuación
+  narrativo es `docs/memoria/indra-mind-estado-y-siguientes-pasos.md`, que es una
+  instantánea fechada: si contradice al repositorio o al usuario, manda lo segundo.
