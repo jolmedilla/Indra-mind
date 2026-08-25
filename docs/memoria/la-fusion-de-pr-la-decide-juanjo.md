@@ -22,7 +22,11 @@ decidir cuándo entra un cambio; no que la decisión la tome la herramienta.
 `gh pr merge` ni `git push origin --delete`. Después de que Juanjo fusione, sí
 toca actualizar el puntero del submódulo en `indra-mind`, en commit aparte.
 
-La regla quedó escrita como **regla 6** del `CLAUDE.md` del demostrador (PR #7).
+La regla vive en el `CLAUDE.md` de **`indra-mind`**, el repositorio privado, y **no**
+en el del demostrador. Se intentó ponerla allí (PR #7) y Juanjo la echó atrás: es
+cómo se trabaja con la sesión, no política del proyecto, y el demostrador lo leen
+el cliente y su equipo. La misma frontera de un solo sentido que impide que los
+cuadernos bajen a los submódulos se aplica a las reglas.
 
 Antes de cualquier `gh`, comprobar la cuenta: ver
 [[identidades-de-git-y-github]].

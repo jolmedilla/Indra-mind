@@ -83,6 +83,48 @@ que allí no se reproduce nada del canon a propósito, y una carpeta de
 especificaciones es exactamente eso. Además, muchas tareas cruzan los dos
 submódulos, y el único sitio desde el que se ven los dos es este.
 
+## Quién fusiona, y quién decide
+
+**En `indramind-demostrador`, la sesión abre la pull request y para ahí.** No la
+fusiona nunca por su cuenta, aunque el cambio esté en verde, aunque lo haya
+escrito ella entera y aunque el banco pase. Tampoco borra ramas del remoto. Nada
+de `gh pr merge` ni de `git push origin --delete`.
+
+El `CLAUDE.md` de ese repositorio dice que «quien construye fusiona cuando el
+cambio está listo, sin esperar», y eso es cierto y no se toca: está escrito para
+que el trabajo no se pare cuando el revisor está ocupado o de vacaciones. Pero
+significa que **Juanjo no depende de Alejandro** para decidir cuándo entra un
+cambio; no que la decisión la tome la sesión. El 25-ago-2026 se fusionaron cuatro
+pull requests seguidas sin que Juanjo tocara nada, y no era lo que se quería.
+
+**Esta regla vive aquí y no allí a propósito.** Es cómo se trabaja con la sesión,
+no política del proyecto, y el demostrador lo leen el cliente y su equipo. Lo
+mismo vale para cualquier otra regla sobre cómo colabora Juanjo con Claude: la
+frontera de un solo sentido que gobierna todo este repositorio también se aplica
+a las reglas.
+
+Después de que Juanjo fusione, sí toca actualizar el puntero del submódulo aquí,
+en commit aparte y con ese sentido.
+
+## Dos cuentas de GitHub en la misma máquina
+
+La que sale por defecto es la equivocada. **Antes de cualquier `gh`, comprobar la
+cuenta activa**, porque suele quedarse en `jolmerlyn`, que es de otro cliente:
+
+```sh
+gh auth status
+gh auth switch --hostname github.com --user jolmedilla
+```
+
+Los tres repositorios llevan ya la identidad de git correcta —`Juan J. Olmedilla
+Arregui <juanjo@olmedilla.com>`— por un `[include] path = ~/.gitconfig-personal`
+en su `.git/config`. Si aparece un clon o un submódulo nuevo, hay que ponérselo,
+o los commits saldrán con el correo y la **clave GPG de otro cliente**:
+
+```sh
+git -C <repo> config --local include.path '~/.gitconfig-personal'
+```
+
 ## Notas para trabajar aquí
 
 - **Mira `openspec/changes/` al arrancar**, con `openspec list`, para ver qué hay en curso y con qué tareas.
