@@ -74,6 +74,8 @@ Bandeja: **pendientes PROP-013, 016, 019 y 022**, ninguna nuestra. `banco/instan
 
 Las dos ramas salen de `main` y no se pisan. El recorrido por el código está en `docs/como-funciona-el-demostrador.md`, actualizado.
 
+**Reunión de seguimiento con Alejandro: el 26-ago-2026.** Se propuso para el 25 y se pospuso un día. Es la primera desde que volvió de vacaciones y desde que se acordó la cadencia semanal. Tiene las dos PR sin revisar.
+
 ## La decisión que quedó abierta
 
 Tres caminos, y hay que elegir:
