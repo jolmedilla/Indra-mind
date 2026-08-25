@@ -1,12 +1,12 @@
 ---
 name: indra-mind-estado-y-siguientes-pasos
-description: "Punto de continuación del trabajo de IndraMind: estado al 25-ago-2026, con el modelo de líneas de construcción, el contrato de observables como hueco declarado y la decisión de por dónde seguir"
+description: "Punto de continuación del trabajo de IndraMind: estado al 25-ago-2026 por la tarde, con la rebanada del objeto único construida, la PROP-031 en la bandeja y el orden de trabajo decidido para acabar H1"
 metadata:
   node_type: memory
   type: project
 ---
 
-Estado al **25-ago-2026**. Contexto general en [indra-mind-engagement](indra-mind-engagement.md); el canon en [indramind-poc-repo-canon](indramind-poc-repo-canon.md); cómo quiere José que se trabaje en [instrucciones-jose-proyecto-indramind](instrucciones-jose-proyecto-indramind.md); lo administrativo en [alta-autonomo-y-contratacion-malt](alta-autonomo-y-contratacion-malt.md).
+Estado al **25-ago-2026**. Contexto general en [[indra-mind-engagement]]; el canon en [[indramind-poc-repo-canon]]; cómo quiere José que se trabaje en [[instrucciones-jose-proyecto-indramind]]; lo administrativo en [[alta-autonomo-y-contratacion-malt]].
 
 ## Lo primero al abrir sesión
 
@@ -59,32 +59,71 @@ Tres cosas que José cambió y conviene no repetir:
 
 De ese veredicto nacieron **PROP-014** (frontera de entrega) y **PROP-015** (las tres propiedades del arnés a la letra normativa de §8), ambas ya aplicadas.
 
-## Estado del canon (`origin/main` = `caf59b4`)
+## Estado del canon (`origin/main` = `0567d42`)
 
 Requisitos **v0.5.11** · **ADR-001..062** · **POC-001..011** · índice **v3.48**.
 
-Bandeja: **pendientes PROP-013, 016, 019 y 022**, ninguna nuestra. `banco/instancias/` tiene la instancia cero y `banco/suites/` la suite del demostrador de València, en v0.1 y **en construcción**: hasta la congelación de septiembre, la suite propone y no obliga.
+Bandeja: **pendientes PROP-013, 016, 019, 022 y la nuestra, la PROP-031**, empujada el 25-ago por la tarde. `banco/instancias/` tiene la instancia cero y `banco/suites/` la suite del demostrador de València, en v0.1 y **en construcción**: hasta la congelación de septiembre, la suite propone y no obliga.
 
 ## Dónde está nuestro código
 
-`jolmedilla/indramind-demostrador`, dos PR abiertas y **ninguna fusionada**, las dos sin revisar por Alejandro:
+`jolmedilla/indramind-demostrador`. **Las PR #1 y #2 se fusionaron el 25-ago** (`aed4663` y `87fdcdd`): la regla de trabajar con pull requests, y la partición del correlador y el razonador. **La PR #3 está abierta** con la rebanada del objeto único.
 
-- **PR #1** — la regla de trabajar con pull requests. Solo toca `CLAUDE.md`.
-- **PR #2** — la partición del correlador y el razonador, hecha el 19-ago. El correlador convierte eventos en observaciones y no sabe de dominio; detrás se enchufa un detector, y `P0` y `P1` son **dos clases distintas**, no un umbral distinto: quitar el razonador es dejar de montarlo. Las cuatro ejecuciones dan el mismo resultado que antes.
+El correlador convierte eventos en observaciones y no sabe de dominio; detrás se enchufa un detector, y `P0` y `P1` son **dos clases distintas**, no un umbral distinto. Desde la rebanada 1, el correlador además **sitúa antes de medir** y responde sus ventanas desde lo ya observado en vez de volver al bus.
 
-Las dos ramas salen de `main` y no se pisan. El recorrido por el código está en `docs/como-funciona-el-demostrador.md`, actualizado.
+El recorrido por el código está en `docs/como-funciona-el-demostrador.md`, **y se ha quedado corto**: no cuenta la resolución de objeto ni el submódulo del canon.
 
-**Reunión de seguimiento con Alejandro: el 26-ago-2026.** Se propuso para el 25 y se pospuso un día. Es la primera desde que volvió de vacaciones y desde que se acordó la cadencia semanal. Tiene las dos PR sin revisar.
+**Reunión de seguimiento con Alejandro: el 26-ago-2026**, la primera desde que volvió de vacaciones. Tiene la PR #3 sin revisar —creada a propósito sin pedirle revisión— y la PROP-031, que no es suya (es plano funcional) pero es justo el tipo de tensión que su papel de validación existe para detectar.
 
-## La decisión que quedó abierta
+## La decisión que estaba abierta: resuelta el 25-ago
 
-Tres caminos, y hay que elegir:
+De los tres caminos se eligió **el segundo y el tercero, en ese orden y como una sola pieza**: construir `REQ-07-VLC-01` y, con el motor emitiendo de verdad las seis observables, proponer entonces la letra definitiva del contrato. El primero —migrar las instancias— se descartó: el plan de la tanda deja la instancia canónica de REQ-01 y REQ-02 en el lote IV, así que migrar hoy es adivinar lo que José escribirá.
 
-1. **Migrar las instancias** a la convención nueva: Markdown, token `VLC`, ablaciones a `ABL-nn` y expectativas fuera de la instancia normativa.
-2. **Construir `REQ-07-VLC-01`**, que es la instancia de aceptación común de todas las líneas y que el motor actual no cubre.
-3. **Proponer la letra definitiva del contrato de observables**, que es el hueco declarado de la POC-007 y el único que nadie más puede escribir con fundamento.
+El razonamiento que lo cerró, para no volver a derivarlo: los caminos 2 y 3 son el mismo trabajo visto desde el canon y desde el código, porque construir la noche de la nave **obliga** a emitir las seis observables. Y el orden está forzado al revés de como parecía: proponer la letra sin haber ejecutado sería proponer serialización para observables que nunca hemos emitido, que es la trampa de la PROP-012.
 
-La recomendación dada fue **leer antes el `README` de `/banco`**, que es ahora el hogar de la convención y del contrato del arnés, y decidir con eso delante. El tercero es el que más posiciona de cara al hilo del product owner.
+## Lo que se construyó el 25-ago (rebanada 1 de 3)
+
+**PR #3 de `jolmedilla/indramind-demostrador`**, rama `la-puerta-de-entrada-del-objeto-unico`, tres commits, **abierta y sin pedir revisión a propósito**.
+
+Lo que resuelve: hasta ahora la ley del objeto único se cumplía **por un atajo** —los eventos llegaban con la entidad puesta—. La noche de la nave son siete eventos que no dicen de qué hablan, y el hecho del mundo hay que deducirlo. Entra `motor/resolucion.py` (fusión por espacio y tiempo cuando los círculos de error se tocan; nadie inventa un radio, lo ponen las fuentes al declarar su incertidumbre) y `motor/geo.py` (la función de catálogo `distancia_geo`).
+
+Nace el **objeto**, que no es una detección: es lo que hay antes de que ninguna doctrina opine, y se expone en el expediente con su línea temporal porque sin él la ley del objeto único no es verificable desde fuera.
+
+**El canon entra como submódulo del demostrador**, fijado en `caf59b4`. No es copia sino puntero: los segmentos son fixtures y si la cinta cambia, el replay deja de ser el mismo replay. Los dos repos tienen ahora su propio puntero al canon, y eso es correcto, no una duplicación que arreglar.
+
+Cobertura: la aserción **(a)** del contrato canónico, asertada un peldaño por debajo —sobre el objeto, no sobre la detección—. Declarada en el fichero e impresa en cada ejecución. **Faltan (b) a (e)**: clase y reclasificación, el segundo pack y sus despertares de profundidad uno, las consultas q1/q2 con resultado literal citado, y la pizarra final contra `pizarra-DET-4471.yaml`.
+
+## La PROP-031, en la bandeja desde el 25-ago
+
+**ADR-008 manda repartir el bus por entidad; C-03 dice que la entidad la calcula la máquina correlacionando.** Para las fuentes que informan de un punto y no de un objeto —una llamada al 112—, la clave no existe cuando hay que elegir partición. Con el bus en memoria no se nota; con Kafka, dos particiones son dos procesos que no se conocen y cada uno forma su detección del mismo fuego: **INV-11 se rompe por debajo de toda doctrina**.
+
+Propone la opción C de tres: enunciar la obligación **por su propiedad y no por su mecanismo** —el transporte no separa antes de correlacionar—, dejando la clave libre donde la entidad no viaja en el evento, con la única condición de que sea conservadora. No toca el ADR-008, no elige mecanismo, no añade fila del banco.
+
+El argumento es **interno al canon** y se verifica sin salir de él; nuestras cifras van declaradas aparte. Si José la acepta, nace el ADR-063 y **entonces** se puede proponer el par de garantía, que sería la PROP-032. Antes no: un par de garantía necesita una promesa escrita contra la que la variante infractora falle, y esa promesa hoy no existe.
+
+## El orden de trabajo decidido, y por qué
+
+**Antes de las rebanadas 2 y 3 va la higiene de H1**, pero no la que estaba anotada.
+
+1. **Sacar la doctrina de `dominio.py`.** Los grados están escritos a mano en Python —`0.82`, `0.10`, `0.91`, `0.12`— y los motivos de descarte son cadenas literales; solo los priores vienen del pack. También `politica.py` (`EXPLICACIONES_QUE_NO_INTERRUMPEN` cableado) y el nombre de hipótesis de `DetectorUmbral`. Contradice que la doctrina sea configuración (ADR-022) y **destruye el argumento que vendemos**: la ablación se defiende diciendo «P0 y P1 no son el mismo código con otro umbral», y quien abra el fichero encuentra números a mano.
+2. **Renombrar `REF` → `VLC`** en nuestras instancias. Vamos por delante del canon: el token de hoy es `VLC` y `REF` llega cuando la ciudad se generalice. Es gratis.
+3. **Dos propuestas antes del lote IV** (ver la sección siguiente).
+4. **Rebanadas 2 y 3** de la nave, y después el contrato de observables.
+
+**La deuda del runner como frontera de proceso queda retirada, y conviene no volver a plantearla como estaba.** `src/README.md` la justifica citando POC-005 —«el día que tenga que examinar una implementación ajena»—, pero **POC-007 retiró esa premisa**: el arnés es construcción y queda fuera del canon, y *el runner es de cada línea*. Ninguna línea examina la implementación de otra. Lo que hace comparables a las líneas no es un arnés común sino el **banco** (mismas instancias) y el **contrato de observables** (mismas emisiones). O sea que el sucesor legítimo de esa deuda es el camino 3, que ya está en el plan.
+
+## Qué pasa con REQ-01-REF-01, REQ-02-REF-01 y el pack
+
+**Los ficheros se quedan donde están y hoy no hay que mover nada por nuestra cuenta.** Nuestros YAML son la transcripción ejecutable para nuestro arnés, y el esquema concreto de instancia es **decisión de construcción declarada pendiente** en el `README` de `/banco`. Ya vivieron en el canon una vez —commit `4f3a72c`, 14-ago— y se revirtieron el mismo día en `5145c88`.
+
+Pero hay dos cosas que **sí** son del canon y que hoy solo existen en nuestro repo:
+
+- **El pack `aglomeraciones-valencia.yaml`.** POC-007, punto 5, es explícito: «los insumos compartidos — banco, packs, cintas, esquemas — se producen una sola vez, **en el canon**, porque el contraste solo es válido con entrada idéntica». Y ADR-050 pone «la doctrina de los packs» en el plano funcional, o sea de José. Hoy `/packs` está vacío en el canon y su esquema normativo es pendiente declarado, así que no estamos infringiendo nada; pero **una segunda línea de construcción no podría montar REQ-01**, porque la doctrina no existe donde POC-007 dice que tiene que existir.
+- **Las escenas de REQ-01 y REQ-02 con nuestros números ejecutados.** El plan de la tanda ya trae la escena de REQ-01 escrita por José —jueves 18:40, detección a las 18:47, P0 a las 19:12, antelación de 25 minutos— y **no coincide con la nuestra** (18:05 con razonador, 18:35 sin él, 35 y 5 minutos). Las escribió sin nuestra ejecución delante.
+
+**Y aquí la objeción que las mató antes ya no vale.** En la PROP-012 José quitó nuestros 35 y 5 minutos «porque verificó que `/src` estaba vacío en el canon y no eran comprobables desde donde él miraba». Con la PR #3 publicada y el demostrador compartido con él, **ahora sí son comprobables**. Es el momento de meterlos, y el aviso de método es literal: una propuesta que no entra en la bandeja no existe, y el índice del entregable se quedó trece días en los cuadernos mientras José hacía su propia edición.
+
+Las dos van como **propuestas separadas** por la regla de atomicidad, y van **antes del lote IV**, porque una vez José escriba las instancias normativas cambiarlas cuesta mucho más.
 
 ## El compromiso, con su letra exacta
 
