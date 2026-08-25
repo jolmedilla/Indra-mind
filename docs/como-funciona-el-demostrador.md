@@ -54,13 +54,19 @@ Ejecutamos el escenario REQ-01 —convergencia de fuentes sin evento en agenda�
 ### La traza real, con el perfil P1
 
 ```
-lectura    17:50  salidas_estacion  metro-colon             valor 320   →  0.33 σ
-lectura    18:00  salidas_estacion  metro-colon             valor 480   →  3.00 σ
-lectura    18:05  aforo_paso        espira-corredor-norte   valor 300   →  3.00 σ
-DETECCIÓN  18:05  vencedora: aglomeracion_no_prevista
-lectura    18:10  ocupacion_zona    camara-plaza            valor 1900  →  1.88 σ
-lectura    18:20  ocupacion_zona    camara-plaza            valor 2400  →  3.96 σ
-lectura    18:35  ocupacion_zona    camara-plaza            valor 3200  →  7.29 σ
+17:50:00  ·  nace el objeto zona:plaza-ayuntamiento
+17:50:00     lectura   salidas_estacion   metro-colon              320  +0.33 σ
+18:00:00     lectura   salidas_estacion   metro-colon              480  +3.00 σ
+18:05:00     lectura   aforo_paso         espira-corredor-norte    300  +3.00 σ
+18:05:00  ►  DETECCIÓN · razonador-dominio · vence «aglomeracion_no_prevista»
+          ·  aglomeracion_no_prevista   prior 0.55 → grado 0.82
+          ✗  evento_esperado            prior 0.45 → grado 0.18
+             motivo: No hay evento autorizado en la agenda para esta zona y franja.
+18:10:00     lectura   ocupacion_zona     camara-plaza            1900  +1.88 σ
+18:20:00     lectura   ocupacion_zona     camara-plaza            2400  +3.96 σ
+18:35:00     lectura   ocupacion_zona     camara-plaza            3200  +7.29 σ
+
+18:05:00  ⚑  INTERRUPCIÓN a puesto-calificacion · motivo «aglomeracion_no_prevista»
 ```
 
 Léelo despacio, porque aquí está todo el argumento del proyecto.
@@ -75,6 +81,8 @@ Y fíjate en lo que pasa cinco minutos después: a las 18:10 la cámara de la pl
 
 La referencia humana declarada en la instancia son las 18:40. La detección cae a las 18:05, o sea **35 minutos de antelación**, cuando PRE-03 exige 20 para este caso.
 
+Y mira las dos líneas de debajo de la detección, que son la parte que más cuesta explicar de palabra: el motor **no adopta una explicación única**. Pone las dos encima de la mesa, mata la que la evidencia mata, y deja escrito por qué la mató citando lo que consultó. Eso es INV-03, y no se demuestra con un veredicto en verde: se demuestra enseñándolo. Los grados no los escribe nadie a mano — salen del prior que declara la doctrina y del peso del discriminante que respondió —.
+
 ---
 
 ## 3 · La misma cinta, sin la pieza
@@ -82,18 +90,24 @@ La referencia humana declarada en la instancia son las 18:40. La detección cae 
 Ahora el perfil P0, que es el mismo escenario **con el razonador de dominio quitado** y sustituido por umbrales simples:
 
 ```
-lectura    17:50  salidas_estacion  →  0.33 σ
-lectura    18:00  salidas_estacion  →  3.00 σ
-lectura    18:05  aforo_paso        →  3.00 σ
-lectura    18:10  ocupacion_zona    →  1.88 σ
-lectura    18:20  ocupacion_zona    →  3.96 σ
-lectura    18:35  ocupacion_zona    →  7.29 σ
-DETECCIÓN  18:35  vencedora: aglomeracion_no_prevista
+17:50:00  ·  nace el objeto zona:plaza-ayuntamiento
+17:50:00     lectura   salidas_estacion   metro-colon              320  +0.33 σ
+18:00:00     lectura   salidas_estacion   metro-colon              480  +3.00 σ
+18:05:00     lectura   aforo_paso         espira-corredor-norte    300  +3.00 σ
+18:10:00     lectura   ocupacion_zona     camara-plaza            1900  +1.88 σ
+18:20:00     lectura   ocupacion_zona     camara-plaza            2400  +3.96 σ
+18:35:00     lectura   ocupacion_zona     camara-plaza            3200  +7.29 σ
+18:35:00  ►  DETECCIÓN · umbral-simple · vence «aglomeracion_no_prevista»
+          ·  aglomeracion_no_prevista   prior 0.55 → grado 0.55
+
+18:35:00  ⚑  INTERRUPCIÓN a puesto-calificacion · motivo «aglomeracion_no_prevista»
 ```
 
 Los eventos son **idénticos**. El motor los ve todos. Pero P0 solo mira un tipo —la ocupación ya consumada— y exige 5 desviaciones para hablar. Las señales de aguas arriba pasan por delante y no le dicen nada, porque no sabe combinarlas.
 
 Resultado: detecta a las 18:35, **5 minutos antes** de que lo hubiera visto un operador. Con la plaza ya llena. Técnicamente ha detectado; operativamente llega tarde.
+
+Y compara las dos trazas por debajo de la línea de la detección. P1 pone dos hipótesis en competencia y tacha una con su motivo; **P0 pone una sola y no tacha nada, porque no tiene a quién preguntar.** No es que razone peor: es que no razona. Eso incumple INV-03 por sí mismo, y ahora se ve en la salida en vez de haber que creérselo.
 
 **Eso es una ablación**, y es lo que convierte una demostración en un argumento. No se trata de enseñar que el sistema funciona: se trata de enseñar que **sin esa pieza no funciona**.
 
