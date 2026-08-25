@@ -12,4 +12,4 @@
 
 - [x] 2.1 Volcar los deltas a `openspec/specs/` con la skill de sincronización
 - [x] 2.2 `openspec validate --specs` sin errores
-- [ ] 2.3 Archivar el cambio: no queda trabajo pendiente, la construcción ya estaba hecha
+- [x] 2.3 Archivar el cambio: no queda trabajo pendiente, la construcción ya estaba hecha
