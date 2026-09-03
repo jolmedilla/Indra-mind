@@ -88,7 +88,7 @@ aserción de cinco y otra tiene la conducta pero no la cinta.
 | # | Bloque | Desbloquea | Por qué va donde va |
 |---|---|---|---|
 | A | **La pizarra completa**: clase y reclasificación, despertares, dos packs, consultables, atención, criticidad, proyecciones | 1 entera, y es cimiento de casi todo | Sin pizarra no hay dónde escribir lo que las demás producen. Es también lo que cierra la instancia de aceptación común |
-| B | **Razonador de incidente**: misiones, ratificador, presupuesto de latencia | 1 entera (`REQ-13`), y una rebanada de `REQ-07` | **Es el compromiso firme de mediados de septiembre** |
+| B | **Razonador de incidente**: misiones, ratificador, presupuesto de latencia | 1 entera (`REQ-13`), y una rebanada de `REQ-07` | Es H2, y lo firme de septiembre es **H2 «hasta donde llegue»**, no H2 completo |
 | C | **Capa generativa**: punto único, marcado, anclajes, válvula, presupuesto, pasada cacheada | **6 instancias**, 4 de ellas obligatorias | Es el bloque que más desbloquea, y el único eje que la línea no ha tocado |
 | D | **Salud, frescura y aguante de fuente** | `REQ-24` entera, y un tercio de `REQ-01` | Barato y aparece en dos actos |
 | E | **Proyecciones y consecuencia declarada** | completa `REQ-01`, la pieza central del acto II | Necesita la pizarra (A) |

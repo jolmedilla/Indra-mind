@@ -1,10 +1,14 @@
 ## Why
 
-**Es el compromiso firme y no estaba en el plan.** Lo acordado con José es H1 en
-verde con sus ablaciones **y H2 hasta donde llegue, para mediados de septiembre**,
-y H2 es el razonador de incidente: ante una detección, proponer misiones dentro
-del presupuesto de latencia (PRE-02, ~60 s). Hasta hoy el plan de esta línea
-tenía cinco cambios y ninguno era este.
+**Es H2, y no estaba en el plan.** Lo acordado con José es H1 en verde con sus
+ablaciones **y H2 hasta donde llegue**, para mediados de septiembre. Conviene la
+letra exacta, porque las dos mitades no obligan igual: **H1 es un entregable
+firme y completo; H2 es un esfuerzo firme sin línea de meta.** Las palabras de
+Juanjo el 19-ago fueron «ya veremos hasta dónde llego con H2».
+
+H2 es el razonador de incidente: ante una detección, proponer misiones dentro del
+presupuesto de latencia (PRE-02, ~60 s). Hasta hoy el plan de esta línea tenía
+cinco cambios y ninguno era este.
 
 El storytelling del canon lo confirma por dos sitios. La escena **III-1**
 (`REQ-13-VLC-01`, obligatoria) es «de dos llamadas a misiones propuestas en menos
