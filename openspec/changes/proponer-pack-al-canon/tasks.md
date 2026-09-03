@@ -16,4 +16,4 @@
 
 - [x] 3.1 Añadir la fila al inventario de la sección 10 del `README` de la bandeja
 - [x] 3.2 Commit dentro del submódulo, y push (se puede: Juanjo tiene escritura, pese a lo que dice la regla 10)
-- [ ] 3.3 Mover el puntero del submódulo aquí, en commit aparte
+- [x] 3.3 Mover el puntero del submódulo aquí, en commit aparte
