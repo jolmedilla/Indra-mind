@@ -20,8 +20,13 @@ No estamos infringiendo nada hoy: `/packs` está vacío en el canon y su esquema
 normativo es pendiente declarado. Pero el hueco es nuestro de señalar, porque
 somos los únicos que tenemos un pack que un motor ejecuta de verdad.
 
-Y hay una ventana: el **lote IV** del plan de la tanda asignará instancias a las
-filas obligatorias, REQ-01 y REQ-02 entre ellas. Después, cambiar cuesta más.
+**Y la urgencia subió el 26-ago.** El canon ya no planea instancias sueltas: tiene
+un `storytelling-del-demostrador.md` con una **suite candidata de dieciocho**, y
+la suite **se congela en la consolidación de septiembre**. Dieciocho instancias
+necesitan doctrina, y la doctrina no existe donde POC-007 dice que tiene que
+existir. Congelada la suite sin packs en el canon, cada línea escribirá los suyos
+y el contraste dejará de ser válido por la razón que el propio punto 5 declara:
+«el contraste solo es válido con entrada idéntica».
 
 ## What Changes
 
