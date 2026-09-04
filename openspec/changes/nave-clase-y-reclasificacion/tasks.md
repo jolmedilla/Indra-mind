@@ -29,4 +29,4 @@
 - [x] 6.1 Las aserciones (b) y (c) en verde, y la métrica 7 + 1 = 8
 - [x] 6.2 Actualizar el bloque `cobertura` de la instancia: (b) y (c) salen de la lista de pendientes
 - [x] 6.3 Las cinco ejecuciones anteriores siguen dando lo mismo
-- [ ] 6.4 PR, fusión, puntero
+- [x] 6.4 PR, fusión, puntero
